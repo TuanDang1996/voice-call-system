@@ -1,0 +1,24 @@
+services:
+  kurento:
+    image: kurento/kurento-media-server:7.0
+    hostname: kurento
+    container_name: kurento
+    expose:
+      - "8888"
+    ports:
+      - 8888:8888
+    networks:
+      - kurento_network
+  coturn:
+    build:
+      context: ./coturn
+      dockerfile: Dockerfile
+    network_mode: host
+    environment:
+      - TURN_USERNAME=kurento
+      - TURN_PASSWORD=kurento
+    ports:
+      - '3478:3478/udp'
+networks:
+  kurento_network:
+    driver: bridge
