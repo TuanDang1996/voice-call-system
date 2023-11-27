@@ -30,8 +30,6 @@ services:
     environment:
       - TURN_USERNAME=kurento
       - TURN_PASSWORD=kurento
-    ports:
-      - '3478:3478/udp'
 networks:
   kurento_network:
     driver: bridge
