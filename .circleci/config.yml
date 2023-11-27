@@ -30,6 +30,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            pip3 install setuptools
             apk add --update ansible
             ansible --version
       - run:
