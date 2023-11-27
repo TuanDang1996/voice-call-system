@@ -19,6 +19,7 @@ jobs:
       - run:
           name: Publish Image
           command: |
+            cd signaling-service
             echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
             docker build -t signaling-service:latest .
             docker tag signaling-service:latest tuandanghtt1996/signaling-service:latest
