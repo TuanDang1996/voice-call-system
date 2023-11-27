@@ -4,7 +4,7 @@ orbs:
 jobs:
   build-and-publish-image:
     docker:
-      - image: node:15.14.0
+      - image: cimg/node:15.14.0
     steps:
       - checkout
       - setup_remote_docker:
