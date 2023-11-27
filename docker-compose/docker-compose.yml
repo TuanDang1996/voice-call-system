@@ -19,7 +19,7 @@ services:
       - 8443:8443
     environment:
       - MEDIA_SERVER_HOST=103.56.163.217
-      - MEDIA_SERVER_PORT=8888
+      - MEDIA_SERVER_PORT=8899
       - APP_SERVER_HOST=103.56.163.217
       - APP_SERVER_PORT=8443
     networks:
