@@ -9,6 +9,7 @@ jobs:
       - run:
           name: Build application
           command: |
+            cd signaling-service
             yarn install --pure-lockfile
             yarn build
       - run:
