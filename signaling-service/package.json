@@ -15,7 +15,8 @@
     "ws": "<8.5.4",
     "@types/node": "^14.18.63",
     "nodemon": "1.11.0",
-    "@types/ws": "<8.5.4"
+    "@types/ws": "<8.5.4",
+    "dotenv": "16.3.1"
   },
   "devDependencies": {
     "@types/mocha": "2.2.41",

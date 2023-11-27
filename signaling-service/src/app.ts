@@ -1,16 +1,16 @@
 import * as express from 'express';
-import * as minimist from 'minimist';
 import * as url from 'url';
 import * as fs from 'fs';
 import * as https from 'https';
 import {WebSocket} from './websocket/websocket';
 
-const argv = minimist(process.argv.slice(2), {
-    default: {
-        as_uri: "https://localhost:8444/",
-        ws_uri: "ws://localhost:8888/kurento"
-    }
-});
+const mediaHost =  process.env.MEDIA_SERVER_HOST || 'localhost';
+const mediaPort =  process.env.MEDIA_SERVER_PORT || '8888';
+const mediaUri= "ws://" + mediaHost + ":" + mediaPort + "/kurento"
+
+const appHost =  process.env.APP_SERVER_HOST || 'localhost';
+const appPort =  process.env.APP_SERVER_PORT || '8444';
+const asUri= "https://" + appHost + ":" + appPort + "/"
 
 const options =
     {
@@ -19,7 +19,7 @@ const options =
     };
 
 const app:express.Express = express();
-const asUrl = url.parse(argv.as_uri);
+const asUrl = url.parse(asUri);
 const port = asUrl.port;
 const server = https.createServer(options, app).listen(port, function() {
     console.log('Kurento Tutorial started');
@@ -27,4 +27,4 @@ const server = https.createServer(options, app).listen(port, function() {
 });
 
 //init websocket
-new WebSocket(argv.ws_uri, server)
+new WebSocket(mediaUri, server)
