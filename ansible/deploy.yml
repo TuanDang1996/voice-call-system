@@ -1,0 +1,22 @@
+---
+- name: "Deploy your application"
+  hosts: remote
+  user: root
+  password: "{{ lookup('env', 'SSH_PASSWORD') }}"
+  become: yes
+  vars:
+    docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
+    docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
+  tasks:
+    - name: Update docker-compose file on the server
+      copy:
+          src: ../docker-compose/docker-compose.yml
+          dest: /root
+          owner: root
+          group: root
+          mode: 0644
+    - name: Login to DockerHub remote registry
+      shell: "echo '{{ docker_password }}' | docker login -u {{ docker_username }} --password-stdin"
+      no_log: true
+    - name: Start the application
+      shell: "docker-compose up -d --builf"

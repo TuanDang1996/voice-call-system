@@ -1,0 +1,47 @@
+version: 2.1
+jobs:
+  build-and-publish-image:
+    docker:
+      - image: node:15.14.0
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build application
+          command: |
+            yarn install --pure-lockfile
+            yarn build
+      - run:
+          name: Publish Image
+          command: |
+            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+            docker build -t signaling-service:latest .
+            docker tag signaling-service:latest tuandanghtt1996/signaling-service:latest
+            docker push tuandanghtt1996/signaling-service:latest
+  deploy-application:
+    docker:
+      - image: python:3.11.4-alpine3.18
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible
+            ansible --version
+      - run:
+          name: Deploy application
+          command: |
+            cd ./ansible
+            ansible-playbook -i hosts deploy.yml
+workflows:
+  deploy-workflow:
+    jobs:
+      - build-and-publish-image
+      - provision-infra:
+          requires:
+            - build-and-publish-image
+      - deploy-application:
+          requires:
+            - provision-infra
