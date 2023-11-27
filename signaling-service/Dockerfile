@@ -15,4 +15,4 @@ COPY ./package.json /app/signaling-server
 RUN chmod 777 /app/signaling-server/package.json
 
 EXPOSE ${APP_SERVER_PORT}
-ENTRYPOINT npm start -- --ws_uri=ws://${MEDIA_SERVER_HOST}:${MEDIA_SERVER_PORT}/kurento --as_uri=http://${APP_SERVER_HOST}:${APP_SERVER_PORT}/
+ENTRYPOINT node /app/signaling-server/app.js -- --ws_uri=ws://${MEDIA_SERVER_HOST}:${MEDIA_SERVER_PORT}/kurento --as_uri=http://${APP_SERVER_HOST}:${APP_SERVER_PORT}/
