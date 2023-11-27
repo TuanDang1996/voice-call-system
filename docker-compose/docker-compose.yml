@@ -6,7 +6,7 @@ services:
     expose:
       - "8888"
     ports:
-      - 8888:8888
+      - 8899:8888
     networks:
       - kurento_network
   signaling:

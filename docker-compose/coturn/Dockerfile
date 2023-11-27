@@ -18,6 +18,7 @@ RUN wget http://turnserver.open-sys.org/downloads/v4.4.2.2/turnserver-4.4.2.2-de
   && dpkg -i coturn_4.4.2.2-1_amd64.deb
 
 COPY turnserver.sh /turnserver.sh
+RUN chmod 600 turnserver.sh
 
 ENV REALM kurento.org
 ENV NAT true
