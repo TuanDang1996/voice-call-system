@@ -16,4 +16,4 @@
       shell: "echo '{{ docker_password }}' | docker login -u {{ docker_username }} --password-stdin"
       no_log: true
     - name: Start the application
-      shell: "docker-compose up -d --builf"
+      shell: "docker-compose up -d --build"
