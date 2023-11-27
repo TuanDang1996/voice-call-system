@@ -24,15 +24,14 @@ jobs:
             docker push tuandanghtt1996/signaling-service:latest
   deploy-application:
     docker:
-      - image: python:3.11.4-alpine3.18
+      - image: python:3.11.4
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            pip3 install setuptools
-            apk add --update python-setuptools
-            apk add --update ansible
+            apt update
+            apt install ansible
             ansible --version
       - run:
           name: Deploy application
