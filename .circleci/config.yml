@@ -37,7 +37,7 @@ jobs:
           name: Deploy application
           command: |
             cd ./ansible
-            ansible-playbook -i hosts deploy.yml
+            ansible-playbook -i hosts deploy.yml -e "ansible_port=24700 ansible_password=${SSH_PASSWORD} ansible_user=root"
 workflows:
   deploy-workflow:
     jobs:
