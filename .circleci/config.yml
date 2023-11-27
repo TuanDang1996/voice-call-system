@@ -31,6 +31,7 @@ jobs:
           name: Install dependencies
           command: |
             apt update -y
+            apt install -y sshpass
             apt install -y ansible
             ansible --version
       - run:
