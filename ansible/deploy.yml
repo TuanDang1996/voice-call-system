@@ -15,5 +15,7 @@
     - name: Login to DockerHub remote registry
       shell: "echo '{{ docker_password }}' | docker login -u {{ docker_username }} --password-stdin"
       no_log: true
+    - name: Pull latest version form docker hub
+      shell: "docker pull tuandanghtt1996/signaling-service:latest"
     - name: Start the application
       shell: "docker-compose up -d --build"
