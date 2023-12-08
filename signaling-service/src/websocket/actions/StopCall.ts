@@ -17,7 +17,7 @@ export function stop(sessionId: string) {
         if(user){
             user.closeTheCall(onError)
         }
-        room.pipeline.release()
+        stoppedUser.sendMessage(message)
     }
 
     CachedData.clearCandidatesQueue(sessionId);
