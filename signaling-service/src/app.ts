@@ -5,7 +5,7 @@ import * as https from 'https';
 import {WebSocket} from './websocket/websocket';
 
 const mediaHost =  process.env.MEDIA_SERVER_HOST || 'localhost';
-const mediaPort =  process.env.MEDIA_SERVER_PORT || '8888';
+const mediaPort =  process.env.MEDIA_SERVER_PORT || '8899';
 const mediaUri= "ws://" + mediaHost + ":" + mediaPort + "/kurento"
 
 const appHost =  process.env.APP_SERVER_HOST || 'localhost';

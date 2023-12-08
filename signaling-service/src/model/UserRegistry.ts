@@ -1,25 +1,27 @@
+import {UserSession} from "./UserSession";
+
 export class UserRegistry{
     private static usersById:any = {};
     private static usersByName:any = {};
 
     constructor() {}
 
-    public static register(user:any){
+    public static register(user:UserSession){
         UserRegistry.usersById[user.id] = user;
         UserRegistry.usersByName[user.name] = user;
     }
 
     public static unregister(id:string){
-        const user = UserRegistry.getById(id);
+        const user:UserSession = UserRegistry.getById(id);
         if (user) delete UserRegistry.usersById[id]
         if (user && UserRegistry.getByName(user.name)) delete UserRegistry.usersByName[user.name];
     }
 
-    public static getById(id:string):any{
+    public static getById(id:string):UserSession{
         return UserRegistry.usersById[id];
     }
 
-    public static getByName(name:string) {
+    public static getByName(name:string):UserSession {
         return UserRegistry.usersByName[name];
     }
 

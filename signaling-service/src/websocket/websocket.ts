@@ -20,16 +20,20 @@ export class WebSocket {
 
             ws.on('error', function(error) {
                 console.log('Connection ' + sessionId + ' error');
-                stop(sessionId);
+                const user = UserRegistry.getById(sessionId);
+                if(user && user.roomId){
+                    stop(sessionId, '');
+                }
             });
 
-            ws.on('close', function() {
+            ws.on('close', function(data) {
                 console.log('Connection ' + sessionId + ' closed');
-                stop(sessionId);
+                const user = UserRegistry.getById(sessionId);
+                stop(sessionId, user.roomId);
                 UserRegistry.unregister(sessionId);
             });
 
-            ws.on('message', function(_message) {
+            ws.on('message', async function(_message) {
                 // @ts-ignore
                 const message = JSON.parse(_message);
                 console.log('Connection ' + sessionId + ' received message ', message);
@@ -40,15 +44,15 @@ export class WebSocket {
                         break;
 
                     case 'call':
-                        call(sessionId, message.to, message.from, message.sdpOffer);
+                        await call(uri, sessionId, message.to, message.from, message.sdpOffer);
                         break;
 
                     case 'incomingCallResponse':
-                        incomingCallResponse(uri, sessionId, message.from, message.callResponse, message.sdpOffer, ws);
+                        await incomingCallResponse(sessionId, message.roomId, message.callResponse, message.sdpOffer);
                         break;
 
                     case 'stop':
-                        stop(sessionId);
+                        stop(sessionId, message.roomId);
                         break;
 
                     case 'onIceCandidate':
