@@ -4,15 +4,18 @@ import {Room} from "../../model/Room";
 import {RoomManager} from "../../model/RoomManager";
 import {UserSession} from "../../model/UserSession";
 
-export function stop(sessionId: string, roomId: string) {
-    const room:Room = RoomManager.getRoomById(roomId);
+export function stop(sessionId: string) {
     const stopperUser:UserSession = UserRegistry.getById(sessionId);
+    if(!stopperUser.roomId)
+        return;
 
-    stopperUser.closeTheCall(roomId, onError);
-    if(Object(room.roommates).values.length < 2){
-        const user:UserSession = Object(room.roommates).values[0];
+    const room:Room = RoomManager.getRoomById(stopperUser.roomId);
+
+    stopperUser.closeTheCall(onError);
+    if(Object.values(room.roommates).length < 2){
+        const user:UserSession = Object.values(room.roommates)[0];
         if(user){
-            user.closeTheCall(roomId, onError)
+            user.closeTheCall(onError)
         }
         room.pipeline.release()
     }

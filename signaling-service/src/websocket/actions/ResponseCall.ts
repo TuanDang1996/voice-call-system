@@ -13,20 +13,38 @@ export async function incomingCallResponse( calleeId: string, roomId: string, ca
     }
 
     if (callResponse === 'accept') {
-        await callee.acceptTheCall(roomId, onError)
+        await callee.acceptTheCall(roomId, onError);
+        callee.generateSdpAnswer(null,null, async (error:any, sdpAnswer:any) => {
+            if(error)
+                return onError(callee, error);
+
+            const participants = RoomManager.getRoomById(roomId).getAllParticipantInRoom();
+            const message = {
+                id: 'receiveMediasFrom',
+                participants,
+                roomId,
+                sdpAnswer: sdpAnswer
+            };
+            callee.sendMessage(message);
+        })
+
     } else {
         const decline = {
             id: 'callResponse',
             response: 'rejected',
-            message: 'user declined'
+            message: 'user declined',
+            userName: callee.name
         };
         RoomManager.getRoomById(roomId).announceToAllRoommate(decline);
     }
-}const onError = (user:UserSession, error:any) => {
+}
+
+const onError = (user:UserSession, error:any) => {
     const message = {
         id: 'cannotJoinCall',
         response: 'error',
-        message: error
+        message: error,
+        userName: user.name
     };
     user.sendMessage(message);
 }

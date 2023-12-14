@@ -6,6 +6,8 @@ import {stop} from './actions/StopCall';
 import {register} from './actions/RegisterCall';
 import {incomingCallResponse} from './actions/ResponseCall';
 import {onIceCandidate} from './actions/OnIcandidate';
+import {receiveMediaFrom} from "./actions/ReceiveMedia";
+import {joinRoom} from "./actions/JoinRoom";
 
 export class WebSocket {
     constructor(uri:string, server: any) {
@@ -22,49 +24,64 @@ export class WebSocket {
                 console.log('Connection ' + sessionId + ' error');
                 const user = UserRegistry.getById(sessionId);
                 if(user && user.roomId){
-                    stop(sessionId, '');
+                    stop(sessionId);
                 }
             });
 
             ws.on('close', function(data) {
                 console.log('Connection ' + sessionId + ' closed');
                 const user = UserRegistry.getById(sessionId);
-                stop(sessionId, user.roomId);
+                stop(sessionId);
                 UserRegistry.unregister(sessionId);
             });
 
             ws.on('message', async function(_message) {
-                // @ts-ignore
-                const message = JSON.parse(_message);
-                console.log('Connection ' + sessionId + ' received message ', message);
+                try {
+                    // @ts-ignore
+                    const message = JSON.parse(_message);
+                    console.log('Connection ' + sessionId + ' received message ', message);
 
-                switch (message.id) {
-                    case 'register':
-                        register(sessionId, message.name, ws);
-                        break;
+                    switch (message.id) {
+                        case 'register':
+                            register(sessionId, message.name, ws);
+                            break;
 
-                    case 'call':
-                        await call(uri, sessionId, message.to, message.from, message.sdpOffer);
-                        break;
+                        case 'call':
+                            await call(uri, sessionId, message.to, message.from, message.sdpOffer);
+                            break;
 
-                    case 'incomingCallResponse':
-                        await incomingCallResponse(sessionId, message.roomId, message.callResponse, message.sdpOffer);
-                        break;
+                        case 'incomingCallResponse':
+                            await incomingCallResponse(sessionId, message.roomId, message.callResponse, message.sdpOffer);
+                            break;
 
-                    case 'stop':
-                        stop(sessionId, message.roomId);
-                        break;
+                        case 'stop':
+                            stop(sessionId);
+                            break;
 
-                    case 'onIceCandidate':
-                        onIceCandidate(sessionId, message.candidate);
-                        break;
+                        case 'receiveMediaFrom':
+                            await receiveMediaFrom(sessionId, message.remoteId, message.roomId, message.sdpOffer);
+                            break;
 
-                    default:
-                        ws.send(JSON.stringify({
-                            id : 'error',
-                            message : 'Invalid message ' + message
-                        }));
-                        break;
+                        case 'joinRoom':
+                            await joinRoom(sessionId, message.roomId, message.sdpOffer);
+                            break;
+
+                        case 'onIceCandidate':
+                            onIceCandidate(sessionId, message.candidate, message.name);
+                            break;
+
+                        default:
+                            ws.send(JSON.stringify({
+                                id: 'error',
+                                message: 'Invalid message ' + JSON.stringify(message)
+                            }));
+                            break;
+                    }
+                } catch (e){
+                    ws.send(JSON.stringify({
+                        id: 'error',
+                        message: 'Invalid message ' + e.message
+                    }));
                 }
             });
         });

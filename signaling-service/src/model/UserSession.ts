@@ -11,14 +11,16 @@ export class UserSession{
     private _sdpOffer:any;
     private _webRtcEndpoint:any;
     private _roomId:string;
-    private participantEndpoint:{}
+    private participantEndpoints:{};
+    private candidateQueue: {}
 
     constructor(id:string, name:string, ws:any, sdpOffer:any = null) {
         this._id = id;
         this._name = name;
         this._ws = ws;
         this._sdpOffer = sdpOffer;
-        this.participantEndpoint = {};
+        this.participantEndpoints = {};
+        this.candidateQueue = {}
     }
 
 
@@ -87,9 +89,10 @@ export class UserSession{
 
                 webRtcEndpoint.on('IceCandidateFound', function(event) {
                     const candidate = Kurento.getComplexType('IceCandidate')(event.candidate);
-                    UserRegistry.getById(self._id)._ws.send(JSON.stringify({
+                    UserRegistry.getById(self._id).ws.send(JSON.stringify({
                         id : 'iceCandidate',
-                        candidate : candidate
+                        candidate : candidate,
+                        username: self.name
                     }));
                 });
 
@@ -103,37 +106,33 @@ export class UserSession{
     public async acceptTheCall(roomId:string, callback:any){
         const self = this;
         const room:Room = RoomManager.getRoomById(roomId);
+
+
+        const accept = {
+            id: 'callResponse',
+            response: 'accept',
+            roomId,
+            userName: this.name
+        };
+        RoomManager.getRoomById(roomId).announceToAllRoommate(accept);
         await room.joinRoom(self);
-
-        this.createEndpointAsync(Object.values(room.roommates), room.pipeline).then((selfSdpAnswer) => {
-            const message = {
-                id: 'startCommunication',
-                sdpAnswer: selfSdpAnswer
-            };
-            self.sendMessage(message);
-        }).catch((error) => {
-            callback(self, error);
-        })
-
-
     }
 
-    public generateSdpAnswer(callback: any) {
-        this.webRtcEndpoint.processOffer(this.sdpOffer, callback);
-        this.webRtcEndpoint.gatherCandidates(function(error) {
+    public generateSdpAnswer(externalEndpoint:any = null, externalSdpOffer:any = null, callback: any) {
+        const sdpOffer = externalSdpOffer ? externalSdpOffer : this.sdpOffer;
+        const endpoint = externalEndpoint ? externalEndpoint : this.webRtcEndpoint;
+        endpoint.processOffer(sdpOffer, callback);
+        endpoint.gatherCandidates(function(error) {
             if (error) {
                 return callback(error);
             }
         });
     }
 
-    public closeTheCall(roomId:string, callback:any){
+    public closeTheCall(callback:any){
         try {
-            const room: Room = RoomManager.getRoomById(roomId);
-            Object.values(this.participantEndpoint).forEach((ed:any) => {
-                ed.release();
-            })
-            delete this.participantEndpoint;
+            const room: Room = RoomManager.getRoomById(this.roomId);
+            delete room.roommates[this.id];
 
             this._webRtcEndpoint.release();
             delete this._webRtcEndpoint;
@@ -152,66 +151,72 @@ export class UserSession{
         this._ws.send(JSON.stringify(message));
     }
 
-    private createEndpointAsync(roommates:any, pipeline:any):Promise<any>{
+    public async connectToOther(user:UserSession, sdpOffer:any):Promise<any>{
         const self = this;
         return new Promise((resolve:any, reject:any) => {
-            for(const participant of roommates){
-
-                if(participant.id === self.id)
-                    continue;
-
+            if(self.participantEndpoints[user.name]){
+                user.webRtcEndpoint.connect(self.participantEndpoints[user.name], (error: any) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    user.generateSdpAnswer(self.participantEndpoints[user.name], sdpOffer, (error: any, sdpAnswer: any) => {
+                        if (error) {
+                            return reject(error);
+                        }
+                        return resolve(sdpAnswer)
+                    })
+                })
+            } else {
+                const pipeline:any = RoomManager.getRoomById(self.roomId).pipeline;
                 pipeline.create('WebRtcEndpoint', (error:any, webRtcEndpoint:any) => {
                     if (error) {
                         return reject(error);
                     }
 
-                    if (CachedData.candidatesQueue[participant.id]) {
-                        while(CachedData.candidatesQueue[participant.id].length) {
-                            const candidate = CachedData.candidatesQueue[participant.id].shift();
+                    if (self.candidateQueue[user.name]) {
+                        while(self.candidateQueue[user.name].length) {
+                            const candidate = self.candidateQueue[user.name].shift();
                             webRtcEndpoint.addIceCandidate(candidate);
                         }
                     }
 
                     webRtcEndpoint.on('IceCandidateFound', function(event) {
                         const candidate = Kurento.getComplexType('IceCandidate')(event.candidate);
-                        UserRegistry.getById(participant.id).ws.send(JSON.stringify({
+                        self.ws.send(JSON.stringify({
                             id : 'iceCandidate',
-                            candidate : candidate
+                            candidate : candidate,
+                            username: user.name
                         }));
                     });
-
-                    self.participantEndpoint[participant.id] = webRtcEndpoint;
-                    webRtcEndpoint.connect(self.webRtcEndpoint, (error:any) => {
-                        if(error){
+                    self.participantEndpoints[user.name] = webRtcEndpoint;
+                    user.webRtcEndpoint.connect(webRtcEndpoint,(error:any) => {
+                        if (error) {
                             return reject(error);
                         }
-
-                        self.webRtcEndpoint.connect(webRtcEndpoint, (error:any) => {
-                            if(error){
+                        user.generateSdpAnswer(webRtcEndpoint, sdpOffer, (error: any, sdpAnswer: any) => {
+                            if (error) {
                                 return reject(error);
                             }
-                            participant.generateSdpAnswer((error:any, participantSdpAnswer) => {
-                                if(error){
-                                    return reject(error);
-                                }
-                                self.generateSdpAnswer((error:any, selfSdpAnswer) => {
-                                    if(error){
-                                        return reject(error);
-                                    }
-
-                                    const message = {
-                                        id: 'callResponse',
-                                        response : 'accepted',
-                                        sdpAnswer: participantSdpAnswer
-                                    };
-                                    participant.sendMessage(message);
-                                    resolve(selfSdpAnswer);
-                                })
-                            })
+                            return resolve(sdpAnswer)
                         })
                     })
-                })
+                });
             }
         })
+    }
+
+    public addIceCandidate(candidate: any, name: string){
+        if(this.name === name){
+            this.webRtcEndpoint.addIceCandidate(candidate)
+        } else {
+            if(this.participantEndpoints[name]) {
+                this.participantEndpoints[name].addIceCandidate(candidate)
+            } else {
+                if(!this.candidateQueue[name]){
+                    this.candidateQueue[name] = [];
+                }
+                this.candidateQueue[name].push(candidate);
+            }
+        }
     }
 }

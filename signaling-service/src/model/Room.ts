@@ -57,11 +57,6 @@ export class Room{
 
     public async joinRoom(user:UserSession){
         await user.buildWebRtcEndpoint(this._pipeline, this.onError);
-        const message:{} = {
-            id: 'newParticipantArrived',
-            name: user.name
-        }
-        this.announceToAllRoommate(message);
         this._roommates[user.id] = user;
         user.roomId = this._id;
     }
@@ -88,5 +83,12 @@ export class Room{
         })
     }
 
-
+    public getAllParticipantInRoom():any{
+        return Object.values(this.roommates).map((participant:UserSession) => {
+            return {
+                id: participant.id,
+                name: participant.name
+            }
+        })
+    }
 }

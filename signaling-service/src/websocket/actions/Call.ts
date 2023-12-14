@@ -37,6 +37,14 @@ export async function call(uri:string, callerId: any, to: string[], from: any, s
         };
         return caller.sendMessage(message);
     })
+
+    caller.generateSdpAnswer(null, null, (error: any, sdpAnswer: any) => {
+        const message = {
+            id: 'beginSendMedia',
+            sdpAnswer: sdpAnswer
+        };
+        caller.sendMessage(message);
+    })
 }
 
 
