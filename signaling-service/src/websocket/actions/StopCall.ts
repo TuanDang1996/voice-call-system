@@ -6,7 +6,7 @@ import {UserSession} from "../../model/UserSession";
 
 export function stop(sessionId: string) {
     const stopperUser:UserSession = UserRegistry.getById(sessionId);
-    if(!stopperUser.roomId)
+    if(!stopperUser || !stopperUser.roomId)
         return;
 
     const room:Room = RoomManager.getRoomById(stopperUser.roomId);
