@@ -1,0 +1,20 @@
+services:
+  kurento:
+    image: kurento/kurento-media-server:7.0
+    hostname: kurento
+    container_name: kurento
+    expose:
+      - "8888"
+    ports:
+      - 8899:8888
+    networks:
+      - kurento_network
+  coturn:
+    image: tuandanghtt1996/coturn:latest
+    network_mode: host
+    environment:
+      - TURN_USERNAME=kurento
+      - TURN_PASSWORD=kurento
+networks:
+  kurento_network:
+    driver: bridge

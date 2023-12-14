@@ -1,27 +1,33 @@
 import {CachedData} from "../../helper/CachedData";
 import {UserRegistry} from "../../model/UserRegistry";
+import {Room} from "../../model/Room";
+import {RoomManager} from "../../model/RoomManager";
+import {UserSession} from "../../model/UserSession";
 
 export function stop(sessionId: string) {
-    if (!CachedData.pipelines[sessionId]) {
+    const stopperUser:UserSession = UserRegistry.getById(sessionId);
+    if(!stopperUser.roomId)
         return;
-    }
 
-    const pipeline = CachedData.pipelines[sessionId];
-    delete CachedData.pipelines[sessionId];
-    pipeline.release();
-    const stopperUser = UserRegistry.getById(sessionId);
-    const stoppedUser = UserRegistry.getByName(stopperUser.peer);
-    stopperUser.peer = null;
+    const room:Room = RoomManager.getRoomById(stopperUser.roomId);
 
-    if (stoppedUser) {
-        stoppedUser.peer = null;
-        delete CachedData.pipelines[stoppedUser.id];
-        const message = {
-            id: 'stopCommunication',
-            message: 'remote user hanged out'
+    stopperUser.closeTheCall(onError);
+    if(Object.values(room.roommates).length < 2){
+        const user:UserSession = Object.values(room.roommates)[0];
+        if(user){
+            user.closeTheCall(onError)
         }
-        stoppedUser.sendMessage(message)
+        room.pipeline.release()
     }
 
     CachedData.clearCandidatesQueue(sessionId);
+}
+
+const onError = (user:UserSession, error:any) => {
+    const message = {
+        id: 'cannotStopTheCall',
+        response: 'error',
+        message: error
+    };
+    user.sendMessage(message);
 }

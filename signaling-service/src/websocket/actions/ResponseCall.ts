@@ -1,78 +1,50 @@
 import {CachedData} from "../../helper/CachedData";
 import {UserRegistry} from "../../model/UserRegistry";
-import {CallMediaPipeline} from "../../model/CallMediaPipeline";
+import {RoomManager} from "../../model/RoomManager";
+import {UserSession} from "../../model/UserSession";
 
-export function incomingCallResponse(uri: string, calleeId: string, from: string, callResponse: string, calleeSdp: any, ws: any) {
-
+export async function incomingCallResponse( calleeId: string, roomId: string, callResponse: string, sdpOffer: any) {
     CachedData.clearCandidatesQueue(calleeId);
 
-    function onError(pipeline, callerReason, calleeReason) {
-        if (pipeline) pipeline.release();
-        if (caller) {
-            var callerMessage = {
-                id: 'callResponse',
-                response: 'rejected',
-                message: undefined
-            }
-            if (callerReason) callerMessage.message = callerReason;
-            caller.sendMessage(callerMessage);
-        }
-
-        var calleeMessage = {
-            id: 'stopCommunication',
-            message: undefined
-        };
-        if (calleeReason) calleeMessage.message = calleeReason;
-        callee.sendMessage(calleeMessage);
+    const callee:UserSession = UserRegistry.getById(calleeId);
+    callee.sdpOffer = sdpOffer;
+    if (!roomId || !RoomManager.isExist(roomId)) {
+        return onError(callee, 'Error: unknown roomId = ' + roomId);
     }
-
-    const callee = UserRegistry.getById(calleeId);
-    if (!from || !UserRegistry.getByName(from)) {
-        return onError(null, null, 'unknown from = ' + from);
-    }
-    const caller = UserRegistry.getByName(from);
 
     if (callResponse === 'accept') {
-        const pipeline = new CallMediaPipeline();
-        CachedData.pipelines[caller.id] = pipeline;
-        CachedData.pipelines[callee.id] = pipeline;
+        await callee.acceptTheCall(roomId, onError);
+        callee.generateSdpAnswer(null,null, async (error:any, sdpAnswer:any) => {
+            if(error)
+                return onError(callee, error);
 
-        pipeline.createPipeline(uri, caller.id, callee.id, ws, function(error) {
-            if (error) {
-                return onError(pipeline, error, error);
-            }
+            const participants = RoomManager.getRoomById(roomId).getAllParticipantInRoom();
+            const message = {
+                id: 'receiveMediasFrom',
+                participants,
+                roomId,
+                sdpAnswer: sdpAnswer
+            };
+            callee.sendMessage(message);
+        })
 
-            pipeline.generateSdpAnswer(caller.id, caller.sdpOffer, function(error, callerSdpAnswer) {
-                if (error) {
-                    return onError(pipeline, error, error);
-                }
-
-                pipeline.generateSdpAnswer(callee.id, calleeSdp, function(error, calleeSdpAnswer) {
-                    if (error) {
-                        return onError(pipeline, error, error);
-                    }
-
-                    const message1 = {
-                        id: 'startCommunication',
-                        sdpAnswer: calleeSdpAnswer
-                    };
-                    callee.sendMessage(message1);
-
-                    const message2 = {
-                        id: 'callResponse',
-                        response : 'accepted',
-                        sdpAnswer: callerSdpAnswer
-                    };
-                    caller.sendMessage(message2);
-                });
-            });
-        });
     } else {
         const decline = {
             id: 'callResponse',
             response: 'rejected',
-            message: 'user declined'
+            message: 'user declined',
+            userName: callee.name
         };
-        caller.sendMessage(decline);
+        RoomManager.getRoomById(roomId).announceToAllRoommate(decline);
     }
+}
+
+const onError = (user:UserSession, error:any) => {
+    const message = {
+        id: 'cannotJoinCall',
+        response: 'error',
+        message: error,
+        userName: user.name
+    };
+    user.sendMessage(message);
 }
