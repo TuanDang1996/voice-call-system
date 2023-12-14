@@ -45,10 +45,10 @@ workflows:
       - build-and-publish-image:
           filters:
             branches:
-              only: master
+              only: main
       - deploy-application:
           filters:
             branches:
-              only: master
+              only: main
           requires:
             - build-and-publish-image
