@@ -13,8 +13,7 @@ export class WebSocket {
     constructor(uri:string, server: any) {
         const wss = new WSS.Server({
             server: server,
-            path : '/signaling',
-            handshakeTimeout: 5000
+            path : '/signaling'
         });
 
         wss.on('connection', function(ws) {
