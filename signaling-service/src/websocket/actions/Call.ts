@@ -32,7 +32,7 @@ export async function call(uri:string, callerId: any, to: string[], from: any, s
 
         const message  = {
             id: 'callResponse',
-            response: 'rejected: ',
+            response: 'rejected',
             message: rejectCause
         };
         return caller.sendMessage(message);

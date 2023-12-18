@@ -13,7 +13,8 @@ export class WebSocket {
     constructor(uri:string, server: any) {
         const wss = new WSS.Server({
             server: server,
-            path : '/signaling'
+            path : '/signaling',
+            handshakeTimeout: 5000
         });
 
         wss.on('connection', function(ws) {
@@ -29,10 +30,10 @@ export class WebSocket {
             });
 
             ws.on('close', function(data) {
-                console.log('Connection ' + sessionId + ' closed');
-                const user = UserRegistry.getById(sessionId);
-                stop(sessionId);
-                UserRegistry.unregister(sessionId);
+                // console.log('Connection ' + sessionId + ' closed');
+                // const user = UserRegistry.getById(sessionId);
+                // stop(sessionId);
+                // UserRegistry.unregister(sessionId);
             });
 
             ws.on('message', async function(_message) {

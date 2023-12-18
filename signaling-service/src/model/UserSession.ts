@@ -92,7 +92,7 @@ export class UserSession{
                     UserRegistry.getById(self._id).ws.send(JSON.stringify({
                         id : 'iceCandidate',
                         candidate : candidate,
-                        username: self.name
+                        userName: self.name
                     }));
                 });
 
@@ -185,7 +185,7 @@ export class UserSession{
                         self.ws.send(JSON.stringify({
                             id : 'iceCandidate',
                             candidate : candidate,
-                            username: user.name
+                            userName: user.name
                         }));
                     });
                     self.participantEndpoints[user.name] = webRtcEndpoint;
