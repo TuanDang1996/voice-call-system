@@ -9,6 +9,8 @@ services:
       - 8899:8888
     networks:
       - kurento_network
+    volumes:
+      - ./media:/tmp
   coturn:
     image: tuandanghtt1996/coturn:latest
     network_mode: host

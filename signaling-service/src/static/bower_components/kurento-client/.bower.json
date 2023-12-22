@@ -1,0 +1,62 @@
+{
+  "name": "kurento-client",
+  "description": "JavaScript Client API for Kurento Media Server",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kurento",
+    "mcu",
+    "sfu",
+    "rpc",
+    "mediaserver",
+    "pipe",
+    "audio",
+    "video",
+    "media",
+    "recording",
+    "stream",
+    "streaming",
+    "videoconference",
+    "broadcast",
+    "multicast",
+    "client",
+    "server",
+    "browser",
+    "chrome",
+    "edge",
+    "firefox",
+    "safari",
+    "webrtc",
+    "datachannel",
+    "sdp",
+    "ice",
+    "stun",
+    "turn",
+    "h264",
+    "h.264",
+    "opus",
+    "vp8",
+    "rtp",
+    "srtp",
+    "rtsp"
+  ],
+  "homepage": "https://kurento.openvidu.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kurento/kurento-client-js.git"
+  },
+  "authors": [
+    "Kurento <kurento@openvidu.io> (https://kurento.openvidu.io/)",
+    "Kurento Community <kurento@googlegroups.com> (https://kurento.openvidu.io/)",
+    "Jesús Leganés-Combarro 'piranna' <piranna@gmail.com> (https://pirannafs.blogspot.com/)"
+  ],
+  "main": "js/kurento-client.js",
+  "_release": "ac17935ee9",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "ac17935ee9204bcaa7140339e2f234a2e6c4d6fe"
+  },
+  "_source": "https://github.com/Kurento/kurento-client-bower.git",
+  "_target": "master",
+  "_originalSource": "kurento-client"
+}
