@@ -1,16 +1,14 @@
 import { CachedData } from "../helper/CachedData";
 import { UserRegistry } from "./UserRegistry";
-import * as Kurento from "kurento-client";
+import kurento from "kurento-client";
 import { Room } from "./Room";
 import { RoomManager } from "./RoomManager";
-const RECORDER_URI = "file:///tmp/recording.webm";
 export class UserSession {
   private _id: string;
   private _name: string;
   private _ws: any;
   private _sdpOffer: any;
   private _webRtcEndpoint: any;
-  private _recorderEndpoint: any;
   private _pipeline: any;
   private _roomId: string;
   private participantEndpoints: {};
@@ -65,14 +63,6 @@ export class UserSession {
     this._webRtcEndpoint = value;
   }
 
-  get recorderEndpoint(): any {
-    return this._recorderEndpoint;
-  }
-
-  set recorderEndpoint(value: any) {
-    this._recorderEndpoint = value;
-  }
-
   get roomId(): string {
     return this._roomId;
   }
@@ -105,7 +95,7 @@ export class UserSession {
         }
 
         webRtcEndpoint.on("IceCandidateFound", function (event) {
-          const candidate = Kurento.getComplexType("IceCandidate")(
+          const candidate = kurento.getComplexType("IceCandidate")(
             event.candidate
           );
           UserRegistry.getById(self._id).ws.send(
@@ -123,24 +113,6 @@ export class UserSession {
     });
   }
 
-  public async buildRecorderEndpoint(pipeline: any, callback: any) {
-    let self = this;
-    return new Promise((resolve: any, reject: any) => {
-      pipeline.create(
-        "RecorderEndpoint",
-        { uri: RECORDER_URI, stopOnEndOfStream: true },
-        (error: any, recorderEndpoint: any) => {
-          if (error) {
-            return callback(error);
-          }
-
-          self._recorderEndpoint = recorderEndpoint;
-          resolve();
-        }
-      );
-    });
-  }
-
   public async acceptTheCall(roomId: string, callback: any) {
     const self = this;
     const room: Room = RoomManager.getRoomById(roomId);
@@ -153,28 +125,6 @@ export class UserSession {
     };
     RoomManager.getRoomById(roomId).announceToAllRoommate(accept);
     await room.joinRoom(self);
-  }
-
-  public async connectMediaElements(onError: any) {
-    const self = this;
-    if (!self._webRtcEndpoint || !self._recorderEndpoint) {
-      onError("Cannot use undefined webRtcEndpoint or recorderEndpoint");
-    }
-
-    return new Promise<void>((resolve, reject) => {
-      self._webRtcEndpoint.connect(self._recorderEndpoint, (error) => {
-        if (error) {
-          onError(error);
-        }
-
-        self._webRtcEndpoint.connect(self._webRtcEndpoint, (error) => {
-          if (error) {
-            onError(error);
-          }
-          resolve();
-        });
-      });
-    });
   }
 
   public generateSdpAnswer(
@@ -251,7 +201,7 @@ export class UserSession {
           }
 
           webRtcEndpoint.on("IceCandidateFound", function (event) {
-            const candidate = Kurento.getComplexType("IceCandidate")(
+            const candidate = kurento.getComplexType("IceCandidate")(
               event.candidate
             );
             self.ws.send(

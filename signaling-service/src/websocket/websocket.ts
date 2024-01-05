@@ -8,7 +8,7 @@ import { incomingCallResponse } from "./actions/ResponseCall";
 import { onIceCandidate } from "./actions/OnIcandidate";
 import { receiveMediaFrom } from "./actions/ReceiveMedia";
 import { joinRoom } from "./actions/JoinRoom";
-import * as recorder from "./actions/Recording";
+import { startRecording, stopRecording } from "./actions/RecordCall";
 export class WebSocket {
   constructor(uri: string, server: any) {
     const wss = new WSS.Server({
@@ -90,19 +90,12 @@ export class WebSocket {
               break;
 
             case "startRecording":
-              recorder.startRecording(
-                message.sdpOffer,
-                uri,
-                sessionId,
-                null,
-                ws,
-                (msg) => console.log("Error: ", msg)
-              );
+              startRecording(message.sdpOffer, sessionId, ws);
 
               break;
 
             case "stopRecording":
-              recorder.stopRecording(sessionId);
+              stopRecording(sessionId);
               break;
 
             default:
