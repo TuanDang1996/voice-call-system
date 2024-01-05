@@ -3,7 +3,7 @@ import { WebSocket } from "./websocket/websocket";
 import http from "http";
 import * as config from "./config";
 import routes from "./api/routes";
-
+import "./database/mongodb";
 const app: express.Express = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

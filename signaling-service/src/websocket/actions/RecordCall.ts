@@ -7,6 +7,7 @@ import { CachedData } from "../../helper/CachedData";
 import kurento from "kurento-client";
 import { UserSession } from "../../model/UserSession";
 import { WebSocket } from "ws";
+import services from "src/api/services";
 
 export function stopRecording(sessionId: string) {
   const user = UserRegistry.getById(sessionId);
@@ -60,10 +61,12 @@ export async function startRecording(
   const kurentoClient = await KurentoClient.getKurentoClient(config.KMS_URI);
   const mediaPipeline = await kurentoClient.create("MediaPipeline");
   userSession.pipeline = mediaPipeline;
+  const recorderUri = services.recording.generateRecorderURI(userSession);
   const recorderEndpoint = await mediaPipeline.create("RecorderEndpoint", {
-    uri: `http://129.150.58.44:3000/api/recording/${config.SECRET_KEY}/record.webm`,
+    uri: recorderUri,
     stopOnEndOfStream: true,
   });
+  console.log("Start recording on uri: ", recorderUri);
   const webRtcEndpoint = await buildWebRTCEndpoint(mediaPipeline, userSession);
   await webRtcEndpoint.connect(recorderEndpoint);
   await webRtcEndpoint.connect(webRtcEndpoint);
