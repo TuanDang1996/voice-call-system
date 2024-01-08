@@ -3,7 +3,7 @@ import * as config from "../../config";
 import * as _ from "lodash";
 import kurento from "kurento-client";
 import { WebSocket } from "ws";
-import { RecordingService } from "src/api/services/Recording";
+import { RecordingService } from "src/services/Recording";
 import { UserSession } from "src/model/UserSession";
 import { CachedData } from "src/helper/CachedData";
 import { UserRegistry } from "src/model/UserRegistry";

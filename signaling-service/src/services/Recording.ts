@@ -4,7 +4,7 @@ import {
   SuccessResponse,
   InternalErrorResponse,
   NotFoundResponse,
-} from "../utils/ApiResponse";
+} from "../api/utils/ApiResponse";
 import stream from "stream";
 import AWS from "aws-sdk";
 import * as config from "@appConfig";
