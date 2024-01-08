@@ -94,15 +94,26 @@ export class WebSocket {
               break;
 
             case "startRecording":
-              //startRecording(message.sdpOffer, sessionId, ws);
-              startRecordVoiceMail(message.sdpOffer, sessionId, ws, "phucpham");
+              startRecording(message.sdpOffer, sessionId, ws);
 
               break;
 
             case "stopRecording":
-              //stopRecording(sessionId);
-              stopRecordVoiceMail(sessionId);
+              stopRecording(sessionId);
 
+              break;
+
+            case "startRecordVoiceMail":
+              startRecordVoiceMail(
+                message.sdpOffer,
+                sessionId,
+                ws,
+                message.recipient
+              );
+              break;
+
+            case "stopRecordVoiceMail":
+              stopRecordVoiceMail(sessionId);
               break;
 
             default:
