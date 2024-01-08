@@ -102,6 +102,36 @@ export class MediaStoringService {
       }
     });
   };
+
+  public static steamS3Media = (
+    fileName: string,
+    res: Response,
+    onError: (err) => void
+  ) => {
+    const params = {
+      Bucket: config.AWS_S3_BUCKET_NAME,
+      Key: fileName,
+    };
+
+    S3.headObject(params, function (err, data) {
+      if (err) {
+        // an error occurred
+        return onError(err);
+      }
+      var stream = S3.getObject(params).createReadStream();
+
+      // forward errors
+      stream.on("error", function error(err) {
+        //continue to the next middlewares
+        return onError(err);
+      });
+
+      res.set("ETag", data.ETag);
+
+      //Pipe the s3 object to the response
+      stream.pipe(res);
+    });
+  };
 }
 
 export default {

@@ -1,7 +1,12 @@
 import * as config from "@appConfig";
 import AsyncHandler from "../utils/AsyncHandler";
-import { ForbiddenResponse, SuccessResponse } from "../utils/ApiResponse";
+import {
+  ForbiddenResponse,
+  InternalErrorResponse,
+  SuccessResponse,
+} from "../utils/ApiResponse";
 import { RecordingService } from "src/services/Recording";
+import { MediaStoringService } from "src/services/MediaStoring";
 
 /**
  * @swagger
@@ -104,6 +109,31 @@ export class RecordingController {
     } else {
       this.service.downloadRecordingFromS3(fileName, res);
     }
+  });
+
+  /**
+   * @swagger
+   * /recordings/stream/{filename}:
+   *   get:
+   *     summary: Stream Recording
+   *     description: Stream Recording
+   *     tags: [Recording]
+   *     parameters:
+   *       - in: path
+   *         name: filename
+   *         schema:
+   *           type: string
+   *         description: The file name
+   *     responses:
+   *       200:
+   *         description: OK
+   */
+  public streamRecording = AsyncHandler(async (req, res) => {
+    const decodedToken = req.decodedToken;
+    const fileName = req.params.filename;
+    MediaStoringService.steamS3Media(fileName, res, (err) => {
+      return new InternalErrorResponse().send(res);
+    });
   });
 }
 
