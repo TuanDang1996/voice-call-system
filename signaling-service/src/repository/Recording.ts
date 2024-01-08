@@ -20,10 +20,11 @@ export class RecordingRepository {
     const skip = (page - 1) * limit;
     const recordings = await Recording.find({ owner: owner })
       .skip(skip)
-      .limit(limit);
-    const total = await Recording.countDocuments();
+      .limit(limit)
+      .sort({ _id: -1 });
+    const total = await Recording.countDocuments({ owner: owner });
     return {
-      total: Math.ceil(total / limit),
+      total: total,
       page: page,
       limit: limit,
       data: recordings,

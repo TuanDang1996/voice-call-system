@@ -7,7 +7,7 @@ import { RecordingService } from "src/services/Recording";
  * @swagger
  * tags:
  *   name: Recording
- *   description: Apis for recording
+ *   description: Apis for Recording Feature
  */
 export class RecordingController {
   private service: RecordingService;
@@ -19,7 +19,9 @@ export class RecordingController {
    * @openapi
    * /recordings/{recordingToken}:
    *   post:
+   *     summary: Record call/video
    *     description: Record media
+   *     tags: [Recording]
    *     parameters:
    *       - in: path
    *         name: recordingToken
@@ -42,9 +44,9 @@ export class RecordingController {
     }
 
     if (!config.USE_AWS_S3) {
-      this.service.storeLocalMedia(req, res, tokenData.username);
+      this.service.uploadRecordingToLocal(req, res, tokenData.username);
     } else {
-      this.service.uploadMediaToAWS(req, tokenData.username);
+      this.service.uploadRecordingToAWS(req, tokenData.username);
     }
   });
 
@@ -52,26 +54,26 @@ export class RecordingController {
    * @openapi
    * /recordings/:
    *   get:
+   *     summary: Get list of recordings
    *     description: Get list of recordings
+   *     tags: [Recording]
    *     parameters:
-   *       - in: query
-   *         name: owner
-   *         schema:
-   *           type: string
    *       - in: query
    *         name: page
    *         schema:
    *           type: integer
+   *           example: 1
    *       - in: query
    *         name: limit
    *         schema:
    *           type: integer
+   *           example: 10
    *     responses:
    *       200:
    *         description: A list of recordings
    */
   public getListRecording = AsyncHandler(async (req, res) => {
-    const owner = (req.query.owner as string) || "";
+    const owner = req.decodedToken.userId;
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const data = await this.service.getListRecording(owner, page, limit);
@@ -82,7 +84,9 @@ export class RecordingController {
    * @openapi
    * /recordings/download/{filename}:
    *   get:
+   *     summary: Download media
    *     description: Download media
+   *     tags: [Recording]
    *     parameters:
    *       - in: path
    *         name: filename
@@ -96,9 +100,9 @@ export class RecordingController {
   public downloadMedia = AsyncHandler(async (req, res) => {
     const fileName = req.params.filename;
     if (!config.USE_AWS_S3) {
-      this.service.downloadLocalMedia(fileName, res);
+      this.service.downloadRecordingFromLocal(fileName, res);
     } else {
-      this.service.downloadS3Media(fileName, res);
+      this.service.downloadRecordingFromS3(fileName, res);
     }
   });
 }

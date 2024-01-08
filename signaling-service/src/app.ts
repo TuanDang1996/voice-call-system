@@ -6,9 +6,11 @@ import routes from "./api/routes";
 import swaggerRoute from "./api/routes/swagger";
 
 import "./database/mongodb";
+import authMiddleware from "./api/middlewares/auth";
 const app: express.Express = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(authMiddleware);
 
 app.use(express.static(config.STATIC_PATH));
 app.use(config.API_PREFIX, routes);

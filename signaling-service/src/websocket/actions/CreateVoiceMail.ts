@@ -2,13 +2,12 @@ import { register } from "./RegisterCall";
 import * as config from "../../config";
 import * as _ from "lodash";
 import { WebSocket } from "ws";
-import { RecordingService } from "src/services/Recording";
-
+import { VoiceMailService } from "src/services/VoiceMail";
 import { UserRegistry } from "src/model/UserRegistry";
 import { KurentoClient } from "src/helper/KurentoClient";
 import { buildWebRTCEndpoint } from "src/helper/RecordingUtils";
 
-export function stopRecording(sessionId: string) {
+export function stopRecordVoiceMail(sessionId: string) {
   const user = UserRegistry.getById(sessionId);
   if (user && user.pipeline) {
     console.info("Releasing pipeline");
@@ -17,10 +16,11 @@ export function stopRecording(sessionId: string) {
   }
 }
 
-export async function startRecording(
+export async function startRecordVoiceMail(
   sdpOffer: any,
   sessionId: string,
-  ws: WebSocket
+  ws: WebSocket,
+  recipient: string
 ) {
   let userSession = UserRegistry.getById(sessionId);
   if (!userSession && config.IS_DEBUG) {
@@ -33,11 +33,14 @@ export async function startRecording(
   const kurentoClient = await KurentoClient.getKurentoClient(config.KMS_URI);
   const mediaPipeline = await kurentoClient.create("MediaPipeline");
   userSession.pipeline = mediaPipeline;
-  const recorderUri = RecordingService.generateRecorderURI(userSession);
+  const recorderUri = VoiceMailService.generateVoiceMailRecorderURI(
+    userSession.name,
+    recipient
+  );
   const recorderEndpoint = await mediaPipeline.create("RecorderEndpoint", {
     uri: recorderUri,
     stopOnEndOfStream: true,
-    mediaProfile: "WEBM",
+    mediaProfile: "WEBM_AUDIO_ONLY",
   });
   console.log("Start recording on uri: ", recorderUri);
   const webRtcEndpoint = await buildWebRTCEndpoint(mediaPipeline, userSession);

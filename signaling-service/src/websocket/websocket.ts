@@ -9,6 +9,10 @@ import { onIceCandidate } from "./actions/OnIcandidate";
 import { receiveMediaFrom } from "./actions/ReceiveMedia";
 import { joinRoom } from "./actions/JoinRoom";
 import { startRecording, stopRecording } from "./actions/RecordCall";
+import {
+  startRecordVoiceMail,
+  stopRecordVoiceMail,
+} from "./actions/CreateVoiceMail";
 export class WebSocket {
   constructor(uri: string, server: any) {
     const wss = new WSS.Server({
@@ -90,12 +94,15 @@ export class WebSocket {
               break;
 
             case "startRecording":
-              startRecording(message.sdpOffer, sessionId, ws);
+              //startRecording(message.sdpOffer, sessionId, ws);
+              startRecordVoiceMail(message.sdpOffer, sessionId, ws, "phucpham");
 
               break;
 
             case "stopRecording":
-              stopRecording(sessionId);
+              //stopRecording(sessionId);
+              stopRecordVoiceMail(sessionId);
+
               break;
 
             default:
