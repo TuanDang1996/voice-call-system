@@ -1,13 +1,13 @@
-import { KurentoClient } from "../../helper/KurentoClient";
 import { register } from "./RegisterCall";
-import { UserRegistry } from "../../model/UserRegistry";
 import * as config from "../../config";
 import * as _ from "lodash";
-import { CachedData } from "../../helper/CachedData";
 import kurento from "kurento-client";
-import { UserSession } from "../../model/UserSession";
 import { WebSocket } from "ws";
-import services from "src/api/services";
+import { RecordingService } from "src/api/services/Recording";
+import { UserSession } from "src/model/UserSession";
+import { CachedData } from "src/helper/CachedData";
+import { UserRegistry } from "src/model/UserRegistry";
+import { KurentoClient } from "src/helper/KurentoClient";
 
 export function stopRecording(sessionId: string) {
   const user = UserRegistry.getById(sessionId);
@@ -61,7 +61,7 @@ export async function startRecording(
   const kurentoClient = await KurentoClient.getKurentoClient(config.KMS_URI);
   const mediaPipeline = await kurentoClient.create("MediaPipeline");
   userSession.pipeline = mediaPipeline;
-  const recorderUri = services.recording.generateRecorderURI(userSession);
+  const recorderUri = RecordingService.generateRecorderURI(userSession);
   const recorderEndpoint = await mediaPipeline.create("RecorderEndpoint", {
     uri: recorderUri,
     stopOnEndOfStream: true,

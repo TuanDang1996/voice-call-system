@@ -1,9 +1,10 @@
 import express from "express";
-import controllers from "src/api/controllers";
+import { RecordingController } from "src/api/controllers/Recording";
 
 const router = express.Router();
-
-router.post("/:recordingToken", controllers.recording.recordMedia);
-router.get("/", controllers.recording.getListRecording);
+const controllers = new RecordingController();
+router.post("/:recordingToken", controllers.recordMedia);
+router.get("/", controllers.getListRecording);
+router.get("/download/:filename", controllers.downloadMedia);
 
 export default router;
