@@ -1,18 +1,27 @@
 {
   "compilerOptions": {
+    "esModuleInterop": true,
     "target": "es6",
     "module": "commonjs",
     "outDir": "dist",
-    "sourceMap": true
+    "sourceMap": true,
+    "baseUrl": "./",
+    "paths": {
+      // "@errors/*": ["src/errors/*"],
+      // "@responses/*": ["src/responses/*"],
+      // "@repositories/*": ["src/repositories/*"],
+      // "@requests/*": ["src/requests/*"],
+      // "@middleware/*": ["src/middleware/*"]
+      "@appConfig": ["src/config.ts"]
+    }
   },
   "files": [
     "./node_modules/@types/mocha/index.d.ts",
     "./node_modules/@types/node/index.d.ts"
   ],
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*.ts", "src/public/client.js"],
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "files": true
+  }
 }

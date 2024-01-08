@@ -1,20 +1,27 @@
-import * as express from 'express';
-import {WebSocket} from './websocket/websocket';
-import * as http from "http";
+import express from "express";
+import { WebSocket } from "./websocket/websocket";
+import http from "http";
+import * as config from "./config";
+import routes from "./api/routes";
+import swaggerRoute from "./api/routes/swagger";
 
-const mediaHost =  process.env.MEDIA_SERVER_HOST || 'localhost';
-const mediaPort =  process.env.MEDIA_SERVER_PORT || '8899';
-const mediaUri= "ws://" + mediaHost + ":" + mediaPort + "/kurento"
+import "./database/mongodb";
+import authMiddleware from "./api/middlewares/auth";
+const app: express.Express = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(authMiddleware);
 
-const appHost =  process.env.APP_SERVER_HOST || 'localhost';
-const appPort =  process.env.APP_SERVER_PORT || '8444';
-const asUri= "http://" + appHost + ":" + appPort + "/"
+app.use(express.static(config.STATIC_PATH));
+app.use(config.API_PREFIX, routes);
+app.use("/swagger", swaggerRoute);
 
-const app:express.Express = express();
-const server = http.createServer(app).listen(appPort, function() {
-    console.log('Kurento Tutorial started');
-    console.log(`Open app http://localhost:${appPort} with a WebRTC capable browser`);
+const server = http.createServer(app).listen(config.APP_PORT, function () {
+  console.log("Kurento Tutorial started");
+  console.log(
+    `Open app http://localhost:${config.APP_PORT} with a WebRTC capable browser`
+  );
 });
 
 //init websocket
-new WebSocket(mediaUri, server)
+new WebSocket(config.KMS_URI, server);

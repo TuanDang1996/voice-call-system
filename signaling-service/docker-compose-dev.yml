@@ -3,12 +3,27 @@ services:
     image: kurento/kurento-media-server:7.0
     hostname: kurento
     container_name: kurento
+    environment:
+      - GST_DEBUG="${GST_DEBUG:-2},KurentoUriEndpointImpl:5,uriendpoint:5,GST_URI:6,KurentoRecorderEndpointImpl:5,recorderendpoint:5,basemediamuxer:5,qtmux:5,curl*:5"
     expose:
       - "8888"
     ports:
       - 8899:8888
     networks:
       - kurento_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./media:/tmp
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - 4566:4566
+    networks:
+      - kurento_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   coturn:
     image: tuandanghtt1996/coturn:latest
     network_mode: host
