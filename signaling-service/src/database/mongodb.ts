@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import * as config from "@appConfig";
+import config from "@/config";
 
 mongoose.connect(config.MONGODB_URL, { dbName: "SignalingService" });
 const db = mongoose.connection;

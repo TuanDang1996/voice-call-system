@@ -6,12 +6,16 @@
     "outDir": "dist",
     "sourceMap": true,
     "baseUrl": "./",
+    "rootDir": "./",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
     "paths": {
       // "@errors/*": ["src/errors/*"],
       // "@responses/*": ["src/responses/*"],
       // "@repositories/*": ["src/repositories/*"],
       // "@requests/*": ["src/requests/*"],
       // "@middleware/*": ["src/middleware/*"]
+      "@/*": ["src/*"],
       "@appConfig": ["src/config.ts"]
     }
   },

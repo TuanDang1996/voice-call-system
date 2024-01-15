@@ -39,3 +39,7 @@ export class RecordingRepository {
     return await Recording.findByIdAndDelete(id);
   }
 }
+
+export default {
+  RecordingRepository,
+};

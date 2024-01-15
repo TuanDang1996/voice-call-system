@@ -6,7 +6,7 @@ import {
   NotFoundResponse,
 } from "../api/utils/ApiResponse";
 import AWS from "aws-sdk";
-import * as config from "@appConfig";
+import config from "@/config";
 import path from "path";
 import { UserSession } from "src/model/UserSession";
 import jwt from "jsonwebtoken";

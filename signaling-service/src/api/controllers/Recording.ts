@@ -1,4 +1,4 @@
-import * as config from "@appConfig";
+import config from "@/config";
 import AsyncHandler from "../utils/AsyncHandler";
 import {
   ForbiddenResponse,

@@ -2,7 +2,7 @@ import { TPaginationResponse } from "src/types/Pagination";
 import { VoiceMailRepository } from "src/repository/VoiceMail";
 import { TVoiceMail, TVoiceMailPayloadToken } from "src/types/VoiceMail";
 import jwt from "jsonwebtoken";
-import * as config from "@appConfig";
+import config from "@/config";
 import { v4 } from "uuid";
 import path from "path";
 import { MediaStoringService } from "./MediaStoring";
