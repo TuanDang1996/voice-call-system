@@ -1,6 +1,6 @@
 import kurento from "kurento-client";
-import { UserSession } from "src/model/UserSession";
-import { CachedData } from "src/helper/CachedData";
+import { UserSession } from "@/model/UserSession";
+import { CachedData } from "@/helper/CachedData";
 
 export async function buildWebRTCEndpoint(
   mediaPipeline: kurento.MediaPipeline,

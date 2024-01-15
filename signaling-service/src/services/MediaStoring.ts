@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import fs from "fs";
 import stream from "stream";
 import AWS from "aws-sdk";
-import * as config from "@appConfig";
+import config from "@/config";
 import path from "path";
 
 const S3 = config.USE_AWS_S3

@@ -1,6 +1,6 @@
-import VoiceMail from "src/model/VoiceMail";
-import { TPaginationResponse } from "src/types/Pagination";
-import { TVoiceMail } from "src/types/VoiceMail";
+import VoiceMail from "@/model/VoiceMail";
+import { TPaginationResponse } from "@/types/Pagination";
+import { TVoiceMail } from "@/types/VoiceMail";
 
 export class VoiceMailRepository {
   async createVoiceMail(data: TVoiceMail) {

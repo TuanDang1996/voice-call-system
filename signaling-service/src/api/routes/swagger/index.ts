@@ -3,7 +3,7 @@ import express from "express";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
-import { swaggerDef } from "src/docs/swaggerDef";
+import { swaggerDef } from "@/docs/swaggerDef";
 
 const router = express.Router();
 

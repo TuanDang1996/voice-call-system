@@ -4,17 +4,17 @@ import {
   SuccessResponse,
   InternalErrorResponse,
   NotFoundResponse,
-} from "../api/utils/ApiResponse";
+} from "@/api/utils/ApiResponse";
 import AWS from "aws-sdk";
-import * as config from "@appConfig";
+import config from "@/config";
 import path from "path";
-import { UserSession } from "src/model/UserSession";
+import { UserSession } from "@/model/UserSession";
 import jwt from "jsonwebtoken";
-import { TRecordingToken } from "src/types/Token";
+import { TRecordingToken } from "@/types/Token";
 import { v4 } from "uuid";
-import { TPaginationResponse } from "src/types/Pagination";
-import { RecordingRepository } from "src/repository/Recording";
-import { MediaStoringService } from "./MediaStoring";
+import { TPaginationResponse } from "@/types/Pagination";
+import { RecordingRepository } from "@/repository/Recording";
+import { MediaStoringService } from "@/services/MediaStoring";
 
 export class RecordingService {
   private _s3: AWS.S3 | null;

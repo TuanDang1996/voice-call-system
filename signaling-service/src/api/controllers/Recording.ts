@@ -1,12 +1,12 @@
-import * as config from "@appConfig";
-import AsyncHandler from "../utils/AsyncHandler";
+import config from "@/config";
+import AsyncHandler from "@/api/utils/AsyncHandler";
 import {
   ForbiddenResponse,
   InternalErrorResponse,
   SuccessResponse,
-} from "../utils/ApiResponse";
-import { RecordingService } from "src/services/Recording";
-import { MediaStoringService } from "src/services/MediaStoring";
+} from "@/api/utils/ApiResponse";
+import { RecordingService } from "@/services/Recording";
+import { MediaStoringService } from "@/services/MediaStoring";
 
 /**
  * @swagger

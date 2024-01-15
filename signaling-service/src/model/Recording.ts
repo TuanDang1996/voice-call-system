@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
-import { TRecording } from "src/types/Recording";
+import { TRecording } from "@/types/Recording";
 
 interface RecordingDocument extends TRecording, Document {}
 

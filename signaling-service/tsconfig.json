@@ -6,20 +6,22 @@
     "outDir": "dist",
     "sourceMap": true,
     "baseUrl": "./",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
     "paths": {
       // "@errors/*": ["src/errors/*"],
       // "@responses/*": ["src/responses/*"],
       // "@repositories/*": ["src/repositories/*"],
       // "@requests/*": ["src/requests/*"],
       // "@middleware/*": ["src/middleware/*"]
-      "@appConfig": ["src/config.ts"]
+      "@/*": ["src/*"]
     }
   },
   "files": [
     "./node_modules/@types/mocha/index.d.ts",
     "./node_modules/@types/node/index.d.ts"
   ],
-  "include": ["src/**/*.ts", "src/public/client.js"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"],
   "ts-node": {
     "files": true

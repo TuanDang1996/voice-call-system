@@ -1,16 +1,16 @@
-import { TPaginationResponse } from "src/types/Pagination";
-import { VoiceMailRepository } from "src/repository/VoiceMail";
-import { TVoiceMail, TVoiceMailPayloadToken } from "src/types/VoiceMail";
+import { TPaginationResponse } from "@/types/Pagination";
+import { VoiceMailRepository } from "@/repository/VoiceMail";
+import { TVoiceMail, TVoiceMailPayloadToken } from "@/types/VoiceMail";
 import jwt from "jsonwebtoken";
-import * as config from "@appConfig";
+import config from "@/config";
 import { v4 } from "uuid";
 import path from "path";
-import { MediaStoringService } from "./MediaStoring";
+import { MediaStoringService } from "@/services/MediaStoring";
 import { Request, Response } from "express";
 import {
   InternalErrorResponse,
   SuccessResponse,
-} from "src/api/utils/ApiResponse";
+} from "@/api/utils/ApiResponse";
 
 enum VoiceMailTypeEnum {
   INCOMING = "INCOMING",

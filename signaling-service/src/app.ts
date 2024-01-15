@@ -1,12 +1,13 @@
+require("module-alias/register");
+require("@/database/mongodb");
 import express from "express";
 import { WebSocket } from "./websocket/websocket";
 import http from "http";
-import * as config from "./config";
-import routes from "./api/routes";
-import swaggerRoute from "./api/routes/swagger";
+import config from "@/config";
+import routes from "@/api/routes";
+import swaggerRoute from "@/api/routes/swagger";
+import authMiddleware from "@/api/middlewares/auth";
 
-import "./database/mongodb";
-import authMiddleware from "./api/middlewares/auth";
 const app: express.Express = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

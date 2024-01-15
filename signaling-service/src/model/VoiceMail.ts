@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
-import { TVoiceMail } from "src/types/VoiceMail";
+import { TVoiceMail } from "@/types/VoiceMail";
 
 interface VoiceMailDocument extends TVoiceMail, Document {}
 

@@ -1,7 +1,7 @@
-import * as config from "@appConfig";
-import AsyncHandler from "../utils/AsyncHandler";
-import { ForbiddenResponse, SuccessResponse } from "../utils/ApiResponse";
-import { VoiceMailService } from "src/services/VoiceMail";
+import config from "@/config";
+import AsyncHandler from "@/api/utils/AsyncHandler";
+import { ForbiddenResponse, SuccessResponse } from "@/api/utils/ApiResponse";
+import { VoiceMailService } from "@/services/VoiceMail";
 
 /**
  * @swagger
