@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --inspect -r ts-node/register -r tsconfig-paths/register ./src/app.ts",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "start": "tsc && ts-node -r tsconfig-paths/register dist/src/app.js"
   },
   "dependencies": {
     "@types/kurento-client": "^6.14.13",
@@ -15,6 +16,7 @@
     "aws-sdk": "^2.1530.0",
     "dotenv": "16.3.1",
     "express": "^4.17.0",
+    "jsonwebtoken": "^9.0.2",
     "kurento-client": "^7.0.0",
     "kurento-utils": "^7.0.0",
     "minimist": "^1.1.1",
