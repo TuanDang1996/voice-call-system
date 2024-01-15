@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import config from "@/config";
 import { v4 } from "uuid";
 import path from "path";
-import { MediaStoringService } from "./MediaStoring";
+import { MediaStoringService } from "@/services/MediaStoring";
 import { Request, Response } from "express";
 import {
   InternalErrorResponse,

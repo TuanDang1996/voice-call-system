@@ -1,11 +1,11 @@
-import { register } from "./RegisterCall";
-import * as config from "../../config";
+import { register } from "@/websocket/actions/RegisterCall";
+import * as config from "@/config";
 import * as _ from "lodash";
 import { WebSocket } from "ws";
-import { RecordingService } from "@/services/Recording";
 
 import { UserRegistry } from "@/model/UserRegistry";
 import { KurentoClient } from "@/helper/KurentoClient";
+import { RecordingService } from "@/services/Recording";
 import { buildWebRTCEndpoint } from "@/helper/RecordingUtils";
 
 export function stopRecording(sessionId: string) {

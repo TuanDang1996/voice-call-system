@@ -1,8 +1,8 @@
-import { CachedData } from "../helper/CachedData";
-import { UserRegistry } from "./UserRegistry";
+import { CachedData } from "@/helper/CachedData";
+import { UserRegistry } from "@/model/UserRegistry";
 import kurento from "kurento-client";
-import { Room } from "./Room";
-import { RoomManager } from "./RoomManager";
+import { Room } from "@/model/Room";
+import { RoomManager } from "@/model/RoomManager";
 export class UserSession {
   private _id: string;
   private _name: string;

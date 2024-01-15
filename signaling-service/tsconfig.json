@@ -6,7 +6,6 @@
     "outDir": "dist",
     "sourceMap": true,
     "baseUrl": "./",
-    "rootDir": "./",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "paths": {

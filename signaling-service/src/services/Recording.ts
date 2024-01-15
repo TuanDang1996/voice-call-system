@@ -4,7 +4,7 @@ import {
   SuccessResponse,
   InternalErrorResponse,
   NotFoundResponse,
-} from "../api/utils/ApiResponse";
+} from "@/api/utils/ApiResponse";
 import AWS from "aws-sdk";
 import config from "@/config";
 import path from "path";
@@ -14,7 +14,7 @@ import { TRecordingToken } from "@/types/Token";
 import { v4 } from "uuid";
 import { TPaginationResponse } from "@/types/Pagination";
 import { RecordingRepository } from "@/repository/Recording";
-import { MediaStoringService } from "./MediaStoring";
+import { MediaStoringService } from "@/services/MediaStoring";
 
 export class RecordingService {
   private _s3: AWS.S3 | null;

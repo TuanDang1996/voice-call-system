@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "main": "app.js",
+  "_moduleAliases": {
+    "@": "./dist"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --inspect -r ts-node/register -r tsconfig-paths/register ./src/app.ts",
     "tsc": "tsc",
-    "start": "tsc && ts-node -r tsconfig-paths/register dist/src/app.js"
+    "start": "tsc && node dist/app.js"
   },
   "dependencies": {
     "@types/kurento-client": "^6.14.13",
@@ -20,6 +23,7 @@
     "kurento-client": "^7.0.0",
     "kurento-utils": "^7.0.0",
     "minimist": "^1.1.1",
+    "module-alias": "^2.2.3",
     "mongoose": "^8.0.3",
     "nodemon": "1.11.0",
     "swagger-jsdoc": "^6.2.8",

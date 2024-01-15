@@ -1,5 +1,5 @@
-import { KurentoClient } from "../helper/KurentoClient";
-import { UserSession } from "./UserSession";
+import { KurentoClient } from "@/helper/KurentoClient";
+import { UserSession } from "@/model/UserSession";
 
 export class Room {
   private _pipeline: any;

@@ -1,18 +1,18 @@
 import * as WSS from "ws";
-import { CachedData } from "../helper/CachedData";
-import { UserRegistry } from "../model/UserRegistry";
-import { call } from "./actions/Call";
-import { stop } from "./actions/StopCall";
-import { register } from "./actions/RegisterCall";
-import { incomingCallResponse } from "./actions/ResponseCall";
-import { onIceCandidate } from "./actions/OnIcandidate";
-import { receiveMediaFrom } from "./actions/ReceiveMedia";
-import { joinRoom } from "./actions/JoinRoom";
-import { startRecording, stopRecording } from "./actions/RecordCall";
+import { CachedData } from "@/helper/CachedData";
+import { UserRegistry } from "@/model/UserRegistry";
+import { call } from "@/websocket/actions/Call";
+import { stop } from "@/websocket/actions/StopCall";
+import { register } from "@/websocket/actions/RegisterCall";
+import { incomingCallResponse } from "@/websocket/actions/ResponseCall";
+import { onIceCandidate } from "@/websocket/actions/OnIcandidate";
+import { receiveMediaFrom } from "@/websocket/actions/ReceiveMedia";
+import { joinRoom } from "@/websocket/actions/JoinRoom";
+import { startRecording, stopRecording } from "@/websocket/actions/RecordCall";
 import {
   startRecordVoiceMail,
   stopRecordVoiceMail,
-} from "./actions/CreateVoiceMail";
+} from "@/websocket/actions/CreateVoiceMail";
 export class WebSocket {
   constructor(uri: string, server: any) {
     const wss = new WSS.Server({

@@ -1,5 +1,5 @@
-import { register } from "./RegisterCall";
-import * as config from "../../config";
+import { register } from "@/websocket/actions/RegisterCall";
+import * as config from "@/config";
 import * as _ from "lodash";
 import { WebSocket } from "ws";
 import { VoiceMailService } from "@/services/VoiceMail";

@@ -1,4 +1,4 @@
-import recording from "./Recording";
+import recording from "@/services/Recording";
 
 export default {
   recording,

@@ -1,10 +1,10 @@
 import config from "@/config";
-import AsyncHandler from "../utils/AsyncHandler";
+import AsyncHandler from "@/api/utils/AsyncHandler";
 import {
   ForbiddenResponse,
   InternalErrorResponse,
   SuccessResponse,
-} from "../utils/ApiResponse";
+} from "@/api/utils/ApiResponse";
 import { RecordingService } from "@/services/Recording";
 import { MediaStoringService } from "@/services/MediaStoring";
 
