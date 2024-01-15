@@ -1,5 +1,5 @@
 import express from "express";
-import { RecordingController } from "src/api/controllers/Recording";
+import { RecordingController } from "@/api/controllers/Recording";
 
 const router = express.Router();
 const controllers = new RecordingController();

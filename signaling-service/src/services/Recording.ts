@@ -8,12 +8,12 @@ import {
 import AWS from "aws-sdk";
 import config from "@/config";
 import path from "path";
-import { UserSession } from "src/model/UserSession";
+import { UserSession } from "@/model/UserSession";
 import jwt from "jsonwebtoken";
-import { TRecordingToken } from "src/types/Token";
+import { TRecordingToken } from "@/types/Token";
 import { v4 } from "uuid";
-import { TPaginationResponse } from "src/types/Pagination";
-import { RecordingRepository } from "src/repository/Recording";
+import { TPaginationResponse } from "@/types/Pagination";
+import { RecordingRepository } from "@/repository/Recording";
 import { MediaStoringService } from "./MediaStoring";
 
 export class RecordingService {

@@ -1,4 +1,4 @@
-import { TBearerPayloadToken } from "src/types/Token";
+import { TBearerPayloadToken } from "@/types/Token";
 import { Request } from "express";
 
 export class AuthService {

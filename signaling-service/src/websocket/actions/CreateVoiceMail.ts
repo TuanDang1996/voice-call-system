@@ -2,10 +2,10 @@ import { register } from "./RegisterCall";
 import * as config from "../../config";
 import * as _ from "lodash";
 import { WebSocket } from "ws";
-import { VoiceMailService } from "src/services/VoiceMail";
-import { UserRegistry } from "src/model/UserRegistry";
-import { KurentoClient } from "src/helper/KurentoClient";
-import { buildWebRTCEndpoint } from "src/helper/RecordingUtils";
+import { VoiceMailService } from "@/services/VoiceMail";
+import { UserRegistry } from "@/model/UserRegistry";
+import { KurentoClient } from "@/helper/KurentoClient";
+import { buildWebRTCEndpoint } from "@/helper/RecordingUtils";
 
 export function stopRecordVoiceMail(sessionId: string) {
   const user = UserRegistry.getById(sessionId);

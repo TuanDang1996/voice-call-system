@@ -1,5 +1,5 @@
 import express from "express";
-import { VoiceMailController } from "src/api/controllers/VoiceMail";
+import { VoiceMailController } from "@/api/controllers/VoiceMail";
 const router = express.Router();
 const controllers = new VoiceMailController();
 router.post("/:recordingToken", controllers.recordVoiceMail);

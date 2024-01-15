@@ -1,6 +1,6 @@
-import Recording from "src/model/Recording";
-import { TPaginationResponse } from "src/types/Pagination";
-import { TRecording } from "src/types/Recording";
+import Recording from "@/model/Recording";
+import { TPaginationResponse } from "@/types/Pagination";
+import { TRecording } from "@/types/Recording";
 
 export class RecordingRepository {
   async createRecording(data: TRecording) {

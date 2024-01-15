@@ -5,8 +5,8 @@ import {
   InternalErrorResponse,
   SuccessResponse,
 } from "../utils/ApiResponse";
-import { RecordingService } from "src/services/Recording";
-import { MediaStoringService } from "src/services/MediaStoring";
+import { RecordingService } from "@/services/Recording";
+import { MediaStoringService } from "@/services/MediaStoring";
 
 /**
  * @swagger

@@ -2,11 +2,11 @@ import { register } from "./RegisterCall";
 import * as config from "../../config";
 import * as _ from "lodash";
 import { WebSocket } from "ws";
-import { RecordingService } from "src/services/Recording";
+import { RecordingService } from "@/services/Recording";
 
-import { UserRegistry } from "src/model/UserRegistry";
-import { KurentoClient } from "src/helper/KurentoClient";
-import { buildWebRTCEndpoint } from "src/helper/RecordingUtils";
+import { UserRegistry } from "@/model/UserRegistry";
+import { KurentoClient } from "@/helper/KurentoClient";
+import { buildWebRTCEndpoint } from "@/helper/RecordingUtils";
 
 export function stopRecording(sessionId: string) {
   const user = UserRegistry.getById(sessionId);
