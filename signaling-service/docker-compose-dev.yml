@@ -60,6 +60,19 @@ services:
       - 37018
     networks:
       - kurento_network
+  mongodb-media:
+    container_name: server_mongodb_media
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    command: mongod --auth
+    ports:
+      - '37017:27017'
+    expose:
+      - 37018
+    networks:
+      - kurento_network
 networks:
   kurento_network:
     driver: bridge
