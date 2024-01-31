@@ -14,6 +14,7 @@ export class UserSession {
   private _roomId: string;
   private _participantEndpoints: {};
   private candidateQueue: {};
+  private _player: any;
 
   constructor(id: string, name: string, ws: any, sdpOffer: any = null) {
     this._id = id;
@@ -31,6 +32,15 @@ export class UserSession {
 
   set participantEndpoints(value: {}) {
     this._participantEndpoints = value;
+  }
+
+
+  get player(): any {
+    return this._player;
+  }
+
+  set player(value: any) {
+    this._player = value;
   }
 
   get id(): string {
@@ -243,5 +253,27 @@ export class UserSession {
         this.candidateQueue[name].push(candidate);
       }
     }
+  }
+
+  public buildPlayerEndpoint(pipeline:any, options: any, callback: any){
+    let self = this;
+    return new Promise((resolve, reject) => {
+      pipeline.create("PlayerEndpoint", options, function(error, player) {
+        player.on('EndOfStream', function(event){
+          pipeline.release();
+        });
+
+        player.connect(self._webRtcEndpoint, function(error) {
+          if (error) return callback(error);
+
+          player.play(function(error) {
+            if (error) return callback(error);
+            console.log("Playing ...");
+            self.player = player;
+            resolve(player);
+          });
+        });
+      });
+    })
   }
 }

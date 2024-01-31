@@ -14,6 +14,7 @@ import {
   stopRecordVoiceMail,
 } from "@/websocket/actions/CreateVoiceMail";
 import url from 'url';
+import {makeQueueCall} from "./actions/MakeQueueCall"
 export class WebSocket {
   constructor(uri: string, server: any) {
     const wss = new WSS.Server({
@@ -121,11 +122,12 @@ export class WebSocket {
                 message.recipient
               );
               break;
-
             case "stopRecordVoiceMail":
               stopRecordVoiceMail(sessionId);
               break;
-
+            case "makeCallQueue":
+              await makeQueueCall(message.sdpOffer, sessionId);
+              break;
             default:
               console.error(message);
               ws.send(

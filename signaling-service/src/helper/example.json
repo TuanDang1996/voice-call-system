@@ -1,0 +1,37 @@
+[
+  {
+    "id": 0,
+    "name": "root step",
+    "audio_url": "",
+    "parent_id": null,
+    "type": "normal"
+  },
+  {
+    "id": 1,
+    "name": "root step",
+    "audio_url": "",
+    "parent_id": 0,
+    "type": "normal"
+  },
+  {
+    "id": 2,
+    "name": "root step",
+    "audio_url": "",
+    "parent_id": 0,
+    "type": "normal"
+  },
+  {
+    "id": 3
+    "name": "process call",
+    "audio_url": "",
+    "parent_id": null,
+    "type": "process_call"
+  },
+  {
+    "id": 4,
+    "name": "busy call",
+    "audio_url": "",
+    "parent_id": null,
+    "type": "busy_call"
+  }
+]
