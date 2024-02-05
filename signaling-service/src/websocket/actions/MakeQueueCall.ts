@@ -3,9 +3,12 @@ import {UserRegistry} from "@/model/UserRegistry";
 import * as config from "@/config";
 import {KurentoClient} from "@/helper/KurentoClient";
 import {UserSession} from "@/model/UserSession";
+import * as serviceHierarchy from "@/helper/ServiceHierarchy";
 
 export const makeQueueCall = async (sdpOffer: any,
-                                    sessionId: string) => {
+                                    sessionId: string,
+                                    preAction: any,
+                                    chosenAction: any) => {
     let userSession = UserRegistry.getById(sessionId)
     if (!userSession) {
         return;
@@ -14,7 +17,9 @@ export const makeQueueCall = async (sdpOffer: any,
     const mediaPipeline = await kurentoClient.create("MediaPipeline")
     userSession.pipeline = mediaPipeline;
 
-    const opt = {uri : 'https://github.com/TuanDang1996/voice-call/blob/main/root.mp3?raw=true'}
+    // const opt = {uri : 'https://github.com/TuanDang1996/voice-call/blob/main/root.mp3?raw=true'}
+    const nextAction = findNextAction(preAction, chosenAction);
+
     await userSession.buildWebRtcEndpoint(mediaPipeline, onError)
     await userSession.buildPlayerEndpoint(mediaPipeline, opt, onError)
 
@@ -27,11 +32,11 @@ export const makeQueueCall = async (sdpOffer: any,
     });
 
     userSession.webRtcEndpoint.on('MediaStateChanged', function(event) {
-        if (event.newState == "CONNECTED") {
-            console.log("MediaState is CONNECTED ... printing stats...")
-        }
+        console.log(`MediaState is CONNECTED ... printing stats... ${event.newState}`)
     });
 }
+
+
 
 const onError = (user: UserSession, error: any) => {
     const message = {

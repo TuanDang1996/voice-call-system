@@ -2,35 +2,50 @@
   {
     "id": 0,
     "name": "root step",
-    "audio_url": "",
+    "audio_url": "https://github.com/TuanDang1996/voice-call/blob/main/root.mp3?raw=true",
     "parent_id": null,
     "type": "normal"
   },
   {
     "id": 1,
-    "name": "root step",
-    "audio_url": "",
+    "name": "service a",
+    "text_to_choose": "1",
+    "audio_url": "https://github.com/TuanDang1996/voice-call/blob/main/service_a.mp3?raw=true",
     "parent_id": 0,
     "type": "normal"
   },
   {
     "id": 2,
-    "name": "root step",
-    "audio_url": "",
+    "name": "service b",
+    "text_to_choose": "2",
     "parent_id": 0,
     "type": "normal"
   },
   {
-    "id": 3
+    "id": 3,
+    "name": "service c",
+    "text_to_choose": "1",
+    "parent_id": 1,
+    "type": "normal"
+  },
+  {
+    "id": 4,
+    "name": "service c",
+    "text_to_choose": "1",
+    "parent_id": 1,
+    "type": "normal"
+  },
+  {
+    "id": 5,
     "name": "process call",
-    "audio_url": "",
+    "audio_url": "https://github.com/TuanDang1996/voice-call/blob/main/process.mp3?raw=true",
     "parent_id": null,
     "type": "process_call"
   },
   {
-    "id": 4,
+    "id": 6,
     "name": "busy call",
-    "audio_url": "",
+    "audio_url": "https://github.com/TuanDang1996/voice-call/blob/main/busy.mp3?raw=true",
     "parent_id": null,
     "type": "busy_call"
   }
