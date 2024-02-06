@@ -22,7 +22,7 @@ export function register(id: string, name: string, ws: any) {
 
   UserRegistry.register(new UserSession(id, name, ws));
   try {
-    ws.send(JSON.stringify({ id: "registerResponse", response: "accepted" }));
+    ws.send(JSON.stringify({ id: "registerResponse", response: "accepted", sessionId: id }));
   } catch (exception) {
     onError(exception);
   }
