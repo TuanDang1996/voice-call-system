@@ -4,6 +4,7 @@ import * as config from "@/config";
 import {KurentoClient} from "@/helper/KurentoClient";
 import {UserSession} from "@/model/UserSession";
 import * as serviceHierarchy from "@/helper/ServiceHierarchy";
+import {CachedData} from "@/helper/CachedData";
 
 export const makeQueueCall = async (sdpOffer: any,
                                     sessionId: string,
@@ -22,6 +23,7 @@ export const makeQueueCall = async (sdpOffer: any,
         userSession.player.stop()
         userSession.pipeline.release()
         userSession.webRtcEndpoint = null
+        CachedData.clearCandidatesQueue(sessionId);
     }
     userSession.pipeline = mediaPipeline;
     await userSession.buildWebRtcEndpoint(mediaPipeline, onError)
