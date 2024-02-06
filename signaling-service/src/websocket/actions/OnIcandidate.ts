@@ -10,7 +10,7 @@ export function onIceCandidate(sessionId: string, _candidate: any, name: any) {
   if (user && user.webRtcEndpoint) {
     user.addIceCandidate(candidate, name);
   } else {
-    if (user.id && !CachedData.candidatesQueue[user.id]) {
+    if (user && user.id && !CachedData.candidatesQueue[user.id]) {
       CachedData.candidatesQueue[user.id] = [];
     }
     CachedData.candidatesQueue[sessionId].push(candidate);
