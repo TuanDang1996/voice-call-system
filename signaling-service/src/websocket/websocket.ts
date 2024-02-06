@@ -24,13 +24,13 @@ export class WebSocket {
       const sessionId = CachedData.nextUniqueId();
       console.log("Connection received with sessionId " + sessionId);
 
-      ws.on("error", function (error) {
-        console.log("Connection " + sessionId + " error");
-        const user = UserRegistry.getById(sessionId);
-        if (user && user.roomId) {
-          stop(sessionId);
-        }
-      });
+      // ws.on("error", function (error) {
+      //   console.log("Connection " + sessionId + " error");
+      //   const user = UserRegistry.getById(sessionId);
+      //   if (user && user.roomId) {
+      //     stop(sessionId);
+      //   }
+      // });
 
       ws.on("close", function (data) {
         // console.log("Connection " + sessionId + " closed");
