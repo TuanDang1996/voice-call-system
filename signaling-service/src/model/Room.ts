@@ -71,16 +71,8 @@ export class Room {
     delete this.roommates[userId];
   }
 
-  private onError(message: string): void {
-    if (this._pipeline) this._pipeline.release();
-    Object.values(this._roommates).forEach((user: UserSession) => {
-      const response = {
-        id: "callResponse",
-        response: "rejected",
-        message: message,
-      };
-      user.sendMessage(response);
-    });
+  private onError(message: any): void {
+    console.error(`There is an issue: ${message}`)
   }
 
   public getAllParticipantInRoom(): any {

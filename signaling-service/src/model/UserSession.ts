@@ -83,32 +83,36 @@ export class UserSession {
     let self = this;
     return new Promise((resolve: any, reject: any) => {
       pipeline.create("WebRtcEndpoint", (error: any, webRtcEndpoint: any) => {
-        if (error) {
-          return callback(error);
-        }
-
-        if (CachedData.candidatesQueue[self._id]) {
-          while (CachedData.candidatesQueue[self._id].length) {
-            const candidate = CachedData.candidatesQueue[self._id].shift();
-            webRtcEndpoint.addIceCandidate(candidate);
+        try{
+          if (error) {
+            return callback(error);
           }
+
+          if (CachedData.candidatesQueue[self._id]) {
+            while (CachedData.candidatesQueue[self._id].length) {
+              const candidate = CachedData.candidatesQueue[self._id].shift();
+              webRtcEndpoint.addIceCandidate(candidate);
+            }
+          }
+
+          webRtcEndpoint.on("IceCandidateFound", function (event) {
+            const candidate = kurento.getComplexType("IceCandidate")(
+                event.candidate
+            );
+            UserRegistry.getById(self._id).ws.send(
+                JSON.stringify({
+                  id: "iceCandidate",
+                  candidate: candidate,
+                  userName: self.name,
+                })
+            );
+          });
+
+          self._webRtcEndpoint = webRtcEndpoint;
+          resolve();
+        } catch(err){
+          console.error(`There is an issue when try to create endpointL ${err.message}`)
         }
-
-        webRtcEndpoint.on("IceCandidateFound", function (event) {
-          const candidate = kurento.getComplexType("IceCandidate")(
-            event.candidate
-          );
-          UserRegistry.getById(self._id).ws.send(
-            JSON.stringify({
-              id: "iceCandidate",
-              candidate: candidate,
-              userName: self.name,
-            })
-          );
-        });
-
-        self._webRtcEndpoint = webRtcEndpoint;
-        resolve();
       });
     });
   }
