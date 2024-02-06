@@ -50,7 +50,7 @@ export class WebSocket {
 
           switch (message.id) {
             case "register":
-              register(message.sessionId, message.name, ws);
+              register(sessionId, message.name, ws);
               break;
             case "unregister":
               UserRegistry.unregister(message.sessionId);
@@ -76,7 +76,7 @@ export class WebSocket {
               break;
 
             case "stop":
-              stop(sessionId);
+              stop(message.sessionId);
               break;
 
             case "receiveMediaFrom":
@@ -97,7 +97,7 @@ export class WebSocket {
               break;
 
             case "startRecording":
-              startRecording(message.sdpOffer, sessionId, ws);
+              startRecording(message.sdpOffer, message.sessionId, ws);
 
               break;
 
