@@ -35,6 +35,6 @@ export const AWS_S3_ENDPOINT =
 
 // MongoDB
 export const MONGODB_URL =
-  process.env.MONGODB_URL || "mongodb://localhost:27017";
+  process.env.MONGODB_URL || "mongodb://localhost:37017";
 
 export * as default from "./config";
