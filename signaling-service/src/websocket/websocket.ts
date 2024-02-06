@@ -53,13 +53,13 @@ export class WebSocket {
               register(sessionId, message.name, ws);
               break;
             case "unregister":
-              UserRegistry.unregister(message.sessionId);
+              UserRegistry.unregister(sessionId);
               break;
 
             case "call":
               await call(
                 uri,
-                  message.sessionId,
+                sessionId,
                 message.to,
                 message.from,
                 message.sdpOffer
@@ -68,7 +68,7 @@ export class WebSocket {
 
             case "incomingCallResponse":
               await incomingCallResponse(
-                  message.sessionId,
+                sessionId,
                 message.roomId,
                 message.callResponse,
                 message.sdpOffer
@@ -81,7 +81,7 @@ export class WebSocket {
 
             case "receiveMediaFrom":
               await receiveMediaFrom(
-                  message.sessionId,
+                sessionId,
                 message.remoteId,
                 message.roomId,
                 message.sdpOffer
@@ -89,34 +89,33 @@ export class WebSocket {
               break;
 
             case "joinRoom":
-              await joinRoom(message.sessionId, message.roomId, message.sdpOffer);
+              await joinRoom(sessionId, message.roomId, message.sdpOffer);
               break;
 
             case "onIceCandidate":
-              onIceCandidate(message.sessionId, message.candidate, message.name);
+              onIceCandidate(sessionId, message.candidate, message.name);
               break;
 
             case "startRecording":
-              startRecording(message.sdpOffer, message.sessionId, ws);
+              startRecording(message.sdpOffer, sessionId, ws);
 
               break;
 
             case "stopRecording":
-              stopRecording(message.sessionId);
+              stopRecording(sessionId);
 
               break;
 
             case "startRecordVoiceMail":
               startRecordVoiceMail(
-                message.sdpOffer,
-                  message.sessionId,
+                message.sdpOffer, sessionId,
                 ws,
                 message.recipient
               );
               break;
 
             case "stopRecordVoiceMail":
-              stopRecordVoiceMail(message.sessionId);
+              stopRecordVoiceMail(sessionId);
               break;
 
             default:

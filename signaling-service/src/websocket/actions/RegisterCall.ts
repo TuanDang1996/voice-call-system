@@ -15,12 +15,14 @@ export function register(id: string, name: string, ws: any) {
   if (!name) {
     return onError("empty user name");
   }
-
-  if (UserRegistry.getByName(name)) {
-    return onError("User " + name + " is already registered");
+  const user = UserRegistry.getByName(name);
+  if (user) {
+    user.id = id;
+    user.ws = ws;
+  } else {
+    UserRegistry.register(new UserSession(id, name, ws));
   }
 
-  UserRegistry.register(new UserSession(id, name, ws));
   try {
     ws.send(JSON.stringify({ id: "registerResponse", response: "accepted", sessionId: id }));
   } catch (exception) {
