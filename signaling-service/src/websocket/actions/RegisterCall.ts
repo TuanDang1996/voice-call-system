@@ -6,7 +6,7 @@ export function register(id: string, name: string, ws: any) {
     ws.send(
       JSON.stringify({
         id: "registerResponse",
-        response: "rejected ",
+        response: "rejected",
         message: error,
       })
     );
@@ -24,7 +24,7 @@ export function register(id: string, name: string, ws: any) {
   }
 
   try {
-    ws.send(JSON.stringify({ id: "registerResponse", response: "accepted", sessionId: id }));
+    ws.send(JSON.stringify({ id: "registerResponse", response: "accepted"}));
   } catch (exception) {
     onError(exception);
   }
