@@ -19,7 +19,9 @@ export const makeQueueCall = async (sdpOffer: any,
     const kurentoClient = await KurentoClient.getKurentoClient(config.KMS_URI)
     const mediaPipeline = await kurentoClient.create("MediaPipeline")
     if(userSession.pipeline){
+        userSession.player.stop()
         userSession.pipeline.release()
+        userSession.webRtcEndpoint = null
     }
     userSession.pipeline = mediaPipeline;
     await userSession.buildWebRtcEndpoint(mediaPipeline, onError)
@@ -42,7 +44,6 @@ export const makeQueueCall = async (sdpOffer: any,
             id: "startResponse",
             sdpAnswer: sdpAnswer,
             chosenActId: chosenAct.id,
-            chosenName: chosenAct.name,
             isStartingCall
         };
         userSession.sendMessage(message);

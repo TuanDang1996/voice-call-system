@@ -126,7 +126,7 @@ export class WebSocket {
               stopRecordVoiceMail(sessionId);
               break;
             case "makeCallQueue":
-              await makeQueueCall(message.sdpOffer, sessionId, message.preAction, message.chosenAction);
+              await makeQueueCall(message.sdpOffer, message.sessionId, message.preAction, message.chosenAction);
               break;
             default:
               console.error(message);
