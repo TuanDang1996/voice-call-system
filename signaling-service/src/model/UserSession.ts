@@ -149,6 +149,9 @@ export class UserSession {
 
       this._webRtcEndpoint.release();
       delete this._webRtcEndpoint;
+      this._webRtcEndpoint = null;
+      delete CachedData.candidatesQueue[this.id]
+      this.participantEndpoints = []
 
       const message = {
         id: "stopCommunication",
