@@ -260,7 +260,7 @@ export class UserSession {
     return new Promise((resolve, reject) => {
       pipeline.create("PlayerEndpoint", options, function(error, player) {
         player.on('EndOfStream', function(event){
-          pipeline.release();
+          // pipeline.release();
         });
 
         player.connect(self._webRtcEndpoint, function(error) {

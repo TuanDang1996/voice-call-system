@@ -9,24 +9,41 @@ export const makeQueueCall = async (sdpOffer: any,
                                     sessionId: string,
                                     preAction: any,
                                     chosenAction: any) => {
+    // const opt = {uri : 'https://github.com/TuanDang1996/voice-call/blob/main/root.mp3?raw=true'}
     let userSession = UserRegistry.getById(sessionId)
+    let opt= {};
+    let isStartingCall = false
     if (!userSession) {
         return;
     }
     const kurentoClient = await KurentoClient.getKurentoClient(config.KMS_URI)
     const mediaPipeline = await kurentoClient.create("MediaPipeline")
+    if(userSession.pipeline){
+        userSession.pipeline.release()
+    }
     userSession.pipeline = mediaPipeline;
-
-    // const opt = {uri : 'https://github.com/TuanDang1996/voice-call/blob/main/root.mp3?raw=true'}
-    const nextAction = findNextAction(preAction, chosenAction);
-
     await userSession.buildWebRtcEndpoint(mediaPipeline, onError)
+
+    const chosenAct:any = preAction !== null && preAction !== undefined ? serviceHierarchy.findNextAction(preAction, chosenAction) : serviceHierarchy.findRootAction();
+    const childAct:any = serviceHierarchy.findChildActions(chosenAct['id']);
+
+    if(childAct.length !== 0 || preAction === null || preAction === undefined){
+        opt = {uri : chosenAct.audio_url}
+    } else {
+        const processAct:any = serviceHierarchy.findProcessActions();
+        opt = {uri : processAct.audio_url}
+        isStartingCall = true
+    }
+
     await userSession.buildPlayerEndpoint(mediaPipeline, opt, onError)
 
     userSession.generateSdpAnswer(null, sdpOffer, (error: any, sdpAnswer: any) => {
         const message = {
             id: "startResponse",
             sdpAnswer: sdpAnswer,
+            chosenActId: chosenAct.id,
+            chosenName: chosenAct.name,
+            isStartingCall
         };
         userSession.sendMessage(message);
     });
@@ -35,8 +52,6 @@ export const makeQueueCall = async (sdpOffer: any,
         console.log(`MediaState is CONNECTED ... printing stats... ${event.newState}`)
     });
 }
-
-
 
 const onError = (user: UserSession, error: any) => {
     const message = {
