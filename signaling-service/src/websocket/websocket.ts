@@ -102,7 +102,7 @@ export class WebSocket {
               break;
 
             case "onIceCandidate":
-              onIceCandidate(sessionId, message.candidate, message.name);
+              onIceCandidate(sessionId, message.candidate, message.name, message.isPlaying);
               break;
 
             case "startRecording":

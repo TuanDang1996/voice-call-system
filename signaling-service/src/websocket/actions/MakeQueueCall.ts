@@ -20,10 +20,12 @@ export const makeQueueCall = async (sdpOffer: any,
     const kurentoClient = await KurentoClient.getKurentoClient(config.KMS_URI)
     const mediaPipeline = await kurentoClient.create("MediaPipeline")
     if(userSession.pipeline){
-        userSession.player.stop()
-        userSession.pipeline.release()
-        userSession.webRtcEndpoint = null
-        CachedData.clearCandidatesQueue(sessionId);
+        userSession.player.stop();
+        userSession.pipeline.release();
+        userSession.webRtcEndpoint.release();
+        delete userSession.player;
+        delete userSession.pipeline;
+        delete userSession.webRtcEndpoint;
     }
     userSession.pipeline = mediaPipeline;
     await userSession.buildWebRtcEndpoint(mediaPipeline, onError)

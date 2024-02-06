@@ -30,8 +30,8 @@
   },
   {
     "id": 4,
-    "name": "service c",
-    "text_to_choose": "1",
+    "name": "service d",
+    "text_to_choose": "2",
     "parent_id": 1,
     "type": "normal"
   },
