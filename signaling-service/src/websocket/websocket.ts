@@ -76,7 +76,7 @@ export class WebSocket {
               break;
 
             case "stop":
-              stop(message.sessionId);
+              stop(sessionId);
               break;
 
             case "receiveMediaFrom":
