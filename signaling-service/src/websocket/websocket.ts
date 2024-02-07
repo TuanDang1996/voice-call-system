@@ -13,6 +13,7 @@ import {
   startRecordVoiceMail,
   stopRecordVoiceMail,
 } from "@/websocket/actions/CreateVoiceMail";
+import url from 'url';
 export class WebSocket {
   constructor(uri: string, server: any) {
     const wss = new WSS.Server({
@@ -20,9 +21,16 @@ export class WebSocket {
       path: "/signaling",
     });
 
-    wss.on("connection", function (ws) {
+    wss.on("connection", function (ws, req) {
       const sessionId = CachedData.nextUniqueId();
-      console.log("Connection received with sessionId " + sessionId);
+      const params:any = url.parse(req.url, true).query;
+
+      console.log("Connection received with sessionId " + sessionId + ", params: " + JSON.stringify(params));
+
+      if(params['name']){
+        const name:string = params['name']
+        register(sessionId, name, ws);
+      }
 
       // ws.on("error", function (error) {
       //   console.log("Connection " + sessionId + " error");

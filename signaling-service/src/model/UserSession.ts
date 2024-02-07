@@ -3,6 +3,7 @@ import { UserRegistry } from "@/model/UserRegistry";
 import kurento from "kurento-client";
 import { Room } from "@/model/Room";
 import { RoomManager } from "@/model/RoomManager";
+import * as console from "console";
 export class UserSession {
   private _id: string;
   private _name: string;
@@ -11,7 +12,7 @@ export class UserSession {
   private _webRtcEndpoint: any;
   private _pipeline: any;
   private _roomId: string;
-  private participantEndpoints: {};
+  private _participantEndpoints: {};
   private candidateQueue: {};
 
   constructor(id: string, name: string, ws: any, sdpOffer: any = null) {
@@ -19,8 +20,17 @@ export class UserSession {
     this._name = name;
     this._ws = ws;
     this._sdpOffer = sdpOffer;
-    this.participantEndpoints = {};
+    this._participantEndpoints = {};
     this.candidateQueue = {};
+  }
+
+
+  get participantEndpoints(): {} {
+    return this._participantEndpoints;
+  }
+
+  set participantEndpoints(value: {}) {
+    this._participantEndpoints = value;
   }
 
   get id(): string {
@@ -120,6 +130,7 @@ export class UserSession {
   public async acceptTheCall(roomId: string, callback: any) {
     const self = this;
     const room: Room = RoomManager.getRoomById(roomId);
+    this._participantEndpoints = []
 
     const accept = {
       id: "callResponse",
@@ -155,7 +166,7 @@ export class UserSession {
       delete this._webRtcEndpoint;
       this._webRtcEndpoint = null;
       delete CachedData.candidatesQueue[this.id]
-      this.participantEndpoints = []
+      this._participantEndpoints = []
 
       const message = {
         id: "stopCommunication",
@@ -174,57 +185,37 @@ export class UserSession {
   public async connectToOther(user: UserSession, sdpOffer: any): Promise<any> {
     const self = this;
     return new Promise((resolve: any, reject: any) => {
-      if (self.participantEndpoints[user.name]) {
-        user.webRtcEndpoint.connect(
-          self.participantEndpoints[user.name],
-          (error: any) => {
-            if (error) {
-              return reject(error);
-            }
-            user.generateSdpAnswer(
-              self.participantEndpoints[user.name],
-              sdpOffer,
-              (error: any, sdpAnswer: any) => {
-                if (error) {
-                  return reject(error);
-                }
-                return resolve(sdpAnswer);
-              }
-            );
-          }
-        );
-      } else {
-        const pipeline: any = RoomManager.getRoomById(self.roomId).pipeline;
-        pipeline.create("WebRtcEndpoint", (error: any, webRtcEndpoint: any) => {
-          if (error) {
-            return reject(error);
-          }
+      const pipeline: any = RoomManager.getRoomById(self.roomId).pipeline;
+      pipeline.create("WebRtcEndpoint", (error: any, webRtcEndpoint: any) => {
+        if (error) {
+          return reject(error);
+        }
 
-          if (self.candidateQueue[user.name]) {
-            while (self.candidateQueue[user.name].length) {
-              const candidate = self.candidateQueue[user.name].shift();
-              webRtcEndpoint.addIceCandidate(candidate);
-            }
+        if (self.candidateQueue[user.name]) {
+          while (self.candidateQueue[user.name].length) {
+            const candidate = self.candidateQueue[user.name].shift();
+            webRtcEndpoint.addIceCandidate(candidate);
           }
+        }
 
-          webRtcEndpoint.on("IceCandidateFound", function (event) {
-            const candidate = kurento.getComplexType("IceCandidate")(
+        webRtcEndpoint.on("IceCandidateFound", function (event) {
+          const candidate = kurento.getComplexType("IceCandidate")(
               event.candidate
-            );
-            self.ws.send(
+          );
+          self.ws.send(
               JSON.stringify({
                 id: "iceCandidate",
                 candidate: candidate,
                 userName: user.name,
               })
-            );
-          });
-          self.participantEndpoints[user.name] = webRtcEndpoint;
-          user.webRtcEndpoint.connect(webRtcEndpoint, (error: any) => {
-            if (error) {
-              return reject(error);
-            }
-            user.generateSdpAnswer(
+          );
+        });
+        self._participantEndpoints[user.name] = webRtcEndpoint;
+        user.webRtcEndpoint.connect(webRtcEndpoint, (error: any) => {
+          if (error) {
+            return reject(error);
+          }
+          user.generateSdpAnswer(
               webRtcEndpoint,
               sdpOffer,
               (error: any, sdpAnswer: any) => {
@@ -233,10 +224,9 @@ export class UserSession {
                 }
                 return resolve(sdpAnswer);
               }
-            );
-          });
+          );
         });
-      }
+      });
     });
   }
 
@@ -244,8 +234,8 @@ export class UserSession {
     if (this.name === name) {
       this.webRtcEndpoint.addIceCandidate(candidate);
     } else {
-      if (this.participantEndpoints[name]) {
-        this.participantEndpoints[name].addIceCandidate(candidate);
+      if (this._participantEndpoints[name]) {
+        this._participantEndpoints[name].addIceCandidate(candidate);
       } else {
         if (!this.candidateQueue[name]) {
           this.candidateQueue[name] = [];
