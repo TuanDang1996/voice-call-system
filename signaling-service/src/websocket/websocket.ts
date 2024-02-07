@@ -128,6 +128,9 @@ export class WebSocket {
             case "makeCallQueue":
               await makeQueueCall(message.sdpOffer, sessionId, message.preAction, message.chosenAction);
               break;
+            case "startConnectToStaff":
+              await makeQueueCall(message.sdpOffer, sessionId, message.preAction, message.chosenAction);
+              break;
             default:
               console.error(message);
               ws.send(
