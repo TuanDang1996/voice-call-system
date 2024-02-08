@@ -16,33 +16,61 @@ services:
     image: kurento/kurento-media-server:7.0
     hostname: kurento
     container_name: kurento
+    environment:
+      - GST_DEBUG="${GST_DEBUG:-2},KurentoUriEndpointImpl:5,uriendpoint:5,GST_URI:6,KurentoRecorderEndpointImpl:5,recorderendpoint:5,basemediamuxer:5,qtmux:5,curl*:5"
     expose:
       - "8888"
     ports:
       - 8899:8888
     networks:
       - kurento_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./media:/tmp
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - 4566:4566
+    networks:
+      - kurento_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   coturn:
     image: tuandanghtt1996/coturn:latest
     network_mode: host
     environment:
       - TURN_USERNAME=kurento
       - TURN_PASSWORD=kurento
-  signaling:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    hostname: signaling-service
-    container_name: signaling
-    expose:
-      - "8444"
-    ports:
-      - 8444:8444
+#  signaling:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    hostname: signaling-service
+#    container_name: signaling
+#    expose:
+#      - "8444"
+#    ports:
+#      - 8444:8444
+#    environment:
+#      - MEDIA_SERVER_HOST=kurento
+#      - MEDIA_SERVER_PORT=8888
+#      - APP_SERVER_HOST=localhost
+#      - APP_SERVER_PORT=8444
+#    networks:
+#      - kurento_network
+  mongodb-media:
+    container_name: server_mongodb_media
+    image: mongo:latest
     environment:
-      - MEDIA_SERVER_HOST=kurento
-      - MEDIA_SERVER_PORT=8888
-      - APP_SERVER_HOST=localhost
-      - APP_SERVER_PORT=8444
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    command: mongod --auth
+    ports:
+      - "37017:27017"
+    expose:
+      - 37018
     networks:
       - kurento_network
   keycloak:

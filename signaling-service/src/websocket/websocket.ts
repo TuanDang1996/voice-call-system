@@ -1,106 +1,171 @@
+import { CachedData } from "@/helper/CachedData";
+import { authenticateWebSocketWithKeycloak } from "@/middeware/authebSocket";
+import { UserRegistry } from "@/model/UserRegistry";
+import { call } from "@/websocket/actions/Call";
+import {
+  startRecordVoiceMail,
+  stopRecordVoiceMail,
+} from "@/websocket/actions/CreateVoiceMail";
+import { joinRoom } from "@/websocket/actions/JoinRoom";
+import { onIceCandidate } from "@/websocket/actions/OnIcandidate";
+import { receiveMediaFrom } from "@/websocket/actions/ReceiveMedia";
+import { startRecording, stopRecording } from "@/websocket/actions/RecordCall";
+import { register } from "@/websocket/actions/RegisterCall";
+import { incomingCallResponse } from "@/websocket/actions/ResponseCall";
+import { stop } from "@/websocket/actions/StopCall";
+import url from 'url';
 import * as WSS from 'ws';
-import { CachedData } from "../helper/CachedData";
-import { authenticateSocketWithKeycloak, authenticateWithJWTKeycloak } from '../middeware/authen';
-import { UserRegistry } from "../model/UserRegistry";
-import { call } from './actions/Call';
-import { joinRoom } from "./actions/JoinRoom";
-import { onIceCandidate } from './actions/OnIcandidate';
-import { receiveMediaFrom } from "./actions/ReceiveMedia";
-import { register } from './actions/RegisterCall';
-import { incomingCallResponse } from './actions/ResponseCall';
-import { stop } from './actions/StopCall';
 
+
+  
 
 export class WebSocket {
-   
-    constructor(uri:string, server: any) {
-        const wss = new WSS.Server({
-            server: server,
-            path : '/signaling',
-            // verifyClient: (info, done)=> {
-            //     console.log(info.req ,  done )
-            // }
-           
-        });
+  constructor(uri: string, server: any) {
+    const wss = new WSS.Server({
+      server: server,
+      path: "/signaling",
+    });
 
+    wss.on("connection", function (ws, req) {
+      console.log("connect");
+      authenticateWebSocketWithKeycloak(ws , req , () => {
+        // Your WebSocket connection logic here
+        // Access the authenticated user using ws.user
+      });
+    const sessionId = CachedData.nextUniqueId();
+    console.log('Connection received with sessionId ' + sessionId);
+  
+    ws.on('error', function(error) {
+        console.log('Connection ' + sessionId + ' error');
+        const user = UserRegistry.getById(sessionId);
+        if(user && user.roomId){
+            stop(sessionId);
+        }
+    });
+    
+      const params:any = url.parse(req.url, true).query;
 
-        
-        wss.on('connection',  function(ws , req ) {
-            console.log("key")
-            console.log(process.env.PUBLIC_KEY_H) 
-            authenticateWithJWTKeycloak(req, ws);
+      console.log("Connection received with sessionId " + sessionId + ", params: " + JSON.stringify(params));
 
-            authenticateSocketWithKeycloak(ws , req , () => {
-                // Your WebSocket connection logic here
-                // Access the authenticated user using ws.user
-              });
-            const sessionId = CachedData.nextUniqueId();
-            console.log('Connection received with sessionId ' + sessionId);
-          
-            ws.on('error', function(error) {
-                console.log('Connection ' + sessionId + ' error');
-                const user = UserRegistry.getById(sessionId);
-                if(user && user.roomId){
-                    stop(sessionId);
-                }
-            });
+      if(params['name']){
+        const name:string = params['name']
+        register(sessionId, name, ws);
+      }
 
-            ws.on('close', function(data) {
-                console.log('Connection ' + sessionId + ' closed');
-                const user = UserRegistry.getById(sessionId);
-                stop(sessionId);
-                UserRegistry.unregister(sessionId);
-            });
+      // ws.on("error", function (error) {
+      //   console.log("Connection " + sssionId + " error");
+      //   const user = UserRegistry.getById(sessionId);
+      //   if (user && user.roomId) {
+      //     stop(sessionId);
+      //   }
+      // });
 
-            ws.on('message', async function(_message) {
-                try {
-                    // @ts-ignore
-                    const message = JSON.parse(_message);
-                    console.log('Connection ' + sessionId + ' received message ', message);
+      ws.on("close", function (data) {
+        // console.log("Connection " + sessionId + " closed");
+        // const user = UserRegistry.getById(sessionId);
+        // stop(sessionId);
+        // UserRegistry.unregister(sessionId);
+      });
 
-                    switch (message.id) {
-                        case 'register':
-                            register(sessionId, message.name, ws);
-                            break;
+      ws.on("message", async function (_message) {
+        try {
+          // @ts-ignore
+          const message = JSON.parse(_message);
+          // console.log(
+          //   "Connection " + sessionId + " received message ",
+          //   message
+          // );
 
-                        case 'call':
-                            await call(uri, sessionId, message.to, message.from, message.sdpOffer);
-                            break;
+          switch (message.id) {
+            case "register":
+              register(sessionId, message.name, ws);
+              break;
+            case "unregister":
+              UserRegistry.unregister(sessionId);
+              break;
 
-                        case 'incomingCallResponse':
-                            await incomingCallResponse(sessionId, message.roomId, message.callResponse, message.sdpOffer);
-                            break;
+            case "call":
+              await call(
+                uri,
+                sessionId,
+                message.to,
+                message.from,
+                message.sdpOffer
+              );
+              break;
 
-                        case 'stop':
-                            stop(sessionId);
-                            break;
+            case "incomingCallResponse":
+              await incomingCallResponse(
+                sessionId,
+                message.roomId,
+                message.callResponse,
+                message.sdpOffer
+              );
+              break;
 
-                        case 'receiveMediaFrom':
-                            await receiveMediaFrom(sessionId, message.remoteId, message.roomId, message.sdpOffer);
-                            break;
+            case "stop":
+              stop(sessionId);
+              break;
 
-                        case 'joinRoom':
-                            await joinRoom(sessionId, message.roomId, message.sdpOffer);
-                            break;
+            case "receiveMediaFrom":
+              await receiveMediaFrom(
+                sessionId,
+                message.remoteId,
+                message.roomId,
+                message.sdpOffer
+              );
+              break;
 
-                        case 'onIceCandidate':
-                            onIceCandidate(sessionId, message.candidate, message.name);
-                            break;
+            case "joinRoom":
+              await joinRoom(sessionId, message.roomId, message.sdpOffer);
+              break;
 
-                        default:
-                            ws.send(JSON.stringify({
-                                id: 'error',
-                                message: 'Invalid message ' + JSON.stringify(message)
-                            }));
-                            break;
-                    }
-                } catch (e){
-                    ws.send(JSON.stringify({
-                        id: 'error',
-                        message: 'Invalid message ' + e.message
-                    }));
-                }
-            });
-        });
-    }
+            case "onIceCandidate":
+              onIceCandidate(sessionId, message.candidate, message.name);
+              break;
+
+            case "startRecording":
+              startRecording(message.sdpOffer, sessionId, ws);
+
+              break;
+
+            case "stopRecording":
+              stopRecording(sessionId);
+
+              break;
+
+            case "startRecordVoiceMail":
+              startRecordVoiceMail(
+                message.sdpOffer, sessionId,
+                ws,
+                message.recipient
+              );
+              break;
+
+            case "stopRecordVoiceMail":
+              stopRecordVoiceMail(sessionId);
+              break;
+
+            default:
+              console.error(message);
+              ws.send(
+                JSON.stringify({
+                  id: "error",
+                  message: "Invalid message " + JSON.stringify(message),
+                })
+              );
+              break;
+          }
+        } catch (e) {
+          console.error(e);
+          ws.send(
+            JSON.stringify({
+              id: "error",
+              message: "Invalid message " + e.message,
+            })
+          );
+        }
+      });
+    });
+  }
 }
