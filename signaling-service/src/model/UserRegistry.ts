@@ -1,4 +1,5 @@
-import {UserSession} from "./UserSession";
+
+import { UserSession } from "./UserSession";
 
 export class UserRegistry{
     private static usersById:any = {};
@@ -9,12 +10,20 @@ export class UserRegistry{
     public static register(user:UserSession){
         UserRegistry.usersById[user.id] = user;
         UserRegistry.usersByName[user.name] = user;
+        // const newUser: any = new User({
+        //     _id : user.id
+        // });
+        // newUser.save()
     }
 
     public static unregister(id:string){
         const user:UserSession = UserRegistry.getById(id);
         if (user) delete UserRegistry.usersById[id]
         if (user && UserRegistry.getByName(user.name)) delete UserRegistry.usersByName[user.name];
+        // const newUser: any = new User({
+        //     _id : user.id
+        // });
+        // newUser.deleteOne()
     }
 
     public static getById(id:string):UserSession{
