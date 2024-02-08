@@ -1,19 +1,24 @@
-import * as WSS from "ws";
 import { CachedData } from "@/helper/CachedData";
+import { authenticateWebSocketWithKeycloak } from "@/middeware/authebSocket";
 import { UserRegistry } from "@/model/UserRegistry";
 import { call } from "@/websocket/actions/Call";
-import { stop } from "@/websocket/actions/StopCall";
-import { register } from "@/websocket/actions/RegisterCall";
-import { incomingCallResponse } from "@/websocket/actions/ResponseCall";
-import { onIceCandidate } from "@/websocket/actions/OnIcandidate";
-import { receiveMediaFrom } from "@/websocket/actions/ReceiveMedia";
-import { joinRoom } from "@/websocket/actions/JoinRoom";
-import { startRecording, stopRecording } from "@/websocket/actions/RecordCall";
 import {
   startRecordVoiceMail,
   stopRecordVoiceMail,
 } from "@/websocket/actions/CreateVoiceMail";
+import { joinRoom } from "@/websocket/actions/JoinRoom";
+import { onIceCandidate } from "@/websocket/actions/OnIcandidate";
+import { receiveMediaFrom } from "@/websocket/actions/ReceiveMedia";
+import { startRecording, stopRecording } from "@/websocket/actions/RecordCall";
+import { register } from "@/websocket/actions/RegisterCall";
+import { incomingCallResponse } from "@/websocket/actions/ResponseCall";
+import { stop } from "@/websocket/actions/StopCall";
 import url from 'url';
+import * as WSS from 'ws';
+
+
+  
+
 export class WebSocket {
   constructor(uri: string, server: any) {
     const wss = new WSS.Server({
@@ -22,7 +27,22 @@ export class WebSocket {
     });
 
     wss.on("connection", function (ws, req) {
-      const sessionId = CachedData.nextUniqueId();
+      console.log("connect");
+      authenticateWebSocketWithKeycloak(ws , req , () => {
+        // Your WebSocket connection logic here
+        // Access the authenticated user using ws.user
+      });
+    const sessionId = CachedData.nextUniqueId();
+    console.log('Connection received with sessionId ' + sessionId);
+  
+    ws.on('error', function(error) {
+        console.log('Connection ' + sessionId + ' error');
+        const user = UserRegistry.getById(sessionId);
+        if(user && user.roomId){
+            stop(sessionId);
+        }
+    });
+    
       const params:any = url.parse(req.url, true).query;
 
       console.log("Connection received with sessionId " + sessionId + ", params: " + JSON.stringify(params));
@@ -33,7 +53,7 @@ export class WebSocket {
       }
 
       // ws.on("error", function (error) {
-      //   console.log("Connection " + sessionId + " error");
+      //   console.log("Connection " + sssionId + " error");
       //   const user = UserRegistry.getById(sessionId);
       //   if (user && user.roomId) {
       //     stop(sessionId);

@@ -3,10 +3,11 @@
     "esModuleInterop": true,
     "target": "es6",
     "module": "commonjs",
+    "moduleResolution": "node",
     "outDir": "dist",
     "sourceMap": true,
     "baseUrl": "./",
-    "moduleResolution": "node",
+    "types": ["node"],
     "resolveJsonModule": true,
     "paths": {
       // "@errors/*": ["src/errors/*"],
@@ -25,5 +26,6 @@
   "exclude": ["node_modules"],
   "ts-node": {
     "files": true
-  }
+  },
+  "esm": true 
 }
