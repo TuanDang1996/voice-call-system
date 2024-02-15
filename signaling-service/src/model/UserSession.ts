@@ -3,6 +3,7 @@ import { UserRegistry } from "@/model/UserRegistry";
 import kurento from "kurento-client";
 import { Room } from "@/model/Room";
 import { RoomManager } from "@/model/RoomManager";
+import {SessionStatus} from "@/helper/SessionStatus";
 import * as console from "console";
 export class UserSession {
   private _id: string;
@@ -15,6 +16,7 @@ export class UserSession {
   private _participantEndpoints: {};
   private candidateQueue: {};
   private _player: any;
+  private _status: SessionStatus
 
   constructor(id: string, name: string, ws: any, sdpOffer: any = null) {
     this._id = id;
@@ -23,6 +25,16 @@ export class UserSession {
     this._sdpOffer = sdpOffer;
     this._participantEndpoints = {};
     this.candidateQueue = {};
+    this._status = SessionStatus.READY
+  }
+
+
+  get status(): SessionStatus {
+    return this._status;
+  }
+
+  set status(value: SessionStatus) {
+    this._status = value;
   }
 
 
@@ -260,7 +272,10 @@ export class UserSession {
     return new Promise((resolve, reject) => {
       pipeline.create("PlayerEndpoint", options, function(error, player) {
         player.on('EndOfStream', function(event){
-          // pipeline.release();
+          const message = {
+            id: "checkCallQueueStatus"
+          };
+          self.sendMessage(message);
         });
 
         player.connect(self._webRtcEndpoint, function(error) {
@@ -275,5 +290,14 @@ export class UserSession {
         });
       });
     })
+  }
+
+  public clear(){
+    delete this._pipeline;
+    delete this._player;
+    delete this._webRtcEndpoint;
+    this.candidateQueue = [];
+    CachedData.clearCandidatesQueue(this.id)
+
   }
 }
