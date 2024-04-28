@@ -1,6 +1,7 @@
 import { UserRegistry } from "@/model/UserRegistry";
 import { RoomManager } from "@/model/RoomManager";
 import { UserSession } from "@/model/UserSession";
+import {SessionStatus} from "@/helper/SessionStatus";
 
 export async function receiveMediaFrom(
   localId: string,
@@ -14,7 +15,9 @@ export async function receiveMediaFrom(
   }
 
   const remote: UserSession = UserRegistry.getByName(remoteId);
+
   const sdpAnswer = await local.connectToOther(remote, sdpOffer);
+  local.status = SessionStatus.IN_CALL
   const message = {
     id: "startCommunication",
     sdpAnswer: sdpAnswer,

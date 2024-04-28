@@ -14,6 +14,7 @@ import {
   stopRecordVoiceMail,
 } from "@/websocket/actions/CreateVoiceMail";
 import url from 'url';
+import {makeQueueCall} from "@/websocket/actions/MakeQueueCall"
 export class WebSocket {
   constructor(uri: string, server: any) {
     const wss = new WSS.Server({
@@ -101,7 +102,7 @@ export class WebSocket {
               break;
 
             case "onIceCandidate":
-              onIceCandidate(sessionId, message.candidate, message.name);
+              onIceCandidate(sessionId, message.candidate, message.name, message.isPlaying);
               break;
 
             case "startRecording":
@@ -121,11 +122,15 @@ export class WebSocket {
                 message.recipient
               );
               break;
-
             case "stopRecordVoiceMail":
               stopRecordVoiceMail(sessionId);
               break;
-
+            case "makeCallQueue":
+              await makeQueueCall(message.sdpOffer, sessionId, message.preAction, message.chosenAction);
+              break;
+            case "startConnectToStaff":
+              await makeQueueCall(message.sdpOffer, sessionId, message.preAction, message.chosenAction);
+              break;
             default:
               console.error(message);
               ws.send(
