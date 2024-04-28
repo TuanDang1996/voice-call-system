@@ -14,7 +14,7 @@ import {
   stopRecordVoiceMail,
 } from "@/websocket/actions/CreateVoiceMail";
 import url from 'url';
-import {makeQueueCall} from "./actions/MakeQueueCall"
+import {makeQueueCall} from "@/websocket/actions/MakeQueueCall"
 export class WebSocket {
   constructor(uri: string, server: any) {
     const wss = new WSS.Server({
