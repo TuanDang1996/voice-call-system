@@ -3,7 +3,8 @@ import {UserRegistry} from "@/model/UserRegistry";
 import * as config from "@/config";
 import {KurentoClient} from "@/helper/KurentoClient";
 import {UserSession} from "@/model/UserSession";
-import * as serviceHierarchy from "@/helper/ServiceHierarchy";
+// import * as serviceHierarchy from "@/helper/ServiceHierarchy";
+import {ServiceHierarchyRepository} from "@/repository/ServiceHierarchy";
 import {CachedData} from "@/helper/CachedData";
 
 export const makeQueueCall = async (sdpOffer: any,
@@ -17,6 +18,7 @@ export const makeQueueCall = async (sdpOffer: any,
     if (!userSession) {
         return;
     }
+    const serviceHierarchy = new ServiceHierarchyRepository()
     const kurentoClient = await KurentoClient.getKurentoClient(config.KMS_URI)
     const mediaPipeline = await kurentoClient.create("MediaPipeline")
     if(userSession.pipeline){
@@ -30,13 +32,14 @@ export const makeQueueCall = async (sdpOffer: any,
     userSession.pipeline = mediaPipeline;
     await userSession.buildWebRtcEndpoint(mediaPipeline, onError)
 
-    const chosenAct:any = preAction !== null && preAction !== undefined ? serviceHierarchy.findNextAction(preAction, chosenAction) : serviceHierarchy.findRootAction();
-    const childAct:any = serviceHierarchy.findChildActions(chosenAct['id']);
+    const chosenAct:any = preAction !== null && preAction !== undefined ? await serviceHierarchy.findNextAction(preAction, chosenAction)
+        : await serviceHierarchy.findRootAction();
+    const childAct:any = await serviceHierarchy.findChildActions(chosenAct['id']);
 
     if(childAct.length !== 0 || preAction === null || preAction === undefined){
         opt = {uri : chosenAct.audio_url}
     } else {
-        const processAct:any = serviceHierarchy.findProcessActions();
+        const processAct:any = await serviceHierarchy.findProcessActions();
         opt = {uri : processAct.audio_url}
         isStartingCall = true
     }

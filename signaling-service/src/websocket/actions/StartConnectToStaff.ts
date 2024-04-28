@@ -10,7 +10,7 @@ import {call} from "@/websocket/actions/Call";
 export const startConnectToStaff = async (sessionId: string, serviceId: string, uri: string, localSdpOffer: any) => {
     const caller: UserSession = UserRegistry.getById(sessionId);
 
-    const chosenStaff:any = serviceStaff.findStaffByServiceId(serviceId.toString())
+    const chosenStaff:any = await serviceStaff.findStaffByServiceId(serviceId.toString())
     if(!chosenStaff || chosenStaff.length === 0){
         WaitingQueueCall.pushToQueue(caller.name)
         const message = {
@@ -19,6 +19,6 @@ export const startConnectToStaff = async (sessionId: string, serviceId: string, 
         caller.sendMessage(message)
         return;
     }
-    await caller.clear()
+    caller.clear()
     await call(uri, sessionId, [chosenStaff[0].user_name], caller.name, localSdpOffer)
 }

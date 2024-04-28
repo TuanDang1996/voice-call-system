@@ -298,6 +298,5 @@ export class UserSession {
     delete this._webRtcEndpoint;
     this.candidateQueue = [];
     CachedData.clearCandidatesQueue(this.id)
-
   }
 }
