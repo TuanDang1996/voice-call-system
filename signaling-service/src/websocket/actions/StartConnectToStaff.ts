@@ -20,5 +20,5 @@ export const startConnectToStaff = async (sessionId: string, serviceId: string, 
         return;
     }
     caller.clear()
-    await call(uri, sessionId, [chosenStaff[0].user_name], caller.name, localSdpOffer)
+    await call(uri, sessionId, [chosenStaff[0].user_name], caller.name, localSdpOffer, null)
 }
