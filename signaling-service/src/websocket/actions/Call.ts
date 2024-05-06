@@ -9,7 +9,8 @@ export async function call(
   callerId: any,
   to: string[],
   from: any,
-  sdpOffer: any
+  sdpOffer: any,
+  groupId: string
 ) {
   CachedData.clearCandidatesQueue(callerId);
 
@@ -28,6 +29,7 @@ export async function call(
         id: "incomingCall",
         from: from,
         roomId: room.id,
+        groupId: groupId
       };
       try {
         return callee.sendMessage(message);

@@ -78,7 +78,8 @@ export class WebSocket {
                 sessionId,
                 message.to,
                 message.from,
-                message.sdpOffer
+                message.sdpOffer,
+                message.groupId
               );
               break;
 
