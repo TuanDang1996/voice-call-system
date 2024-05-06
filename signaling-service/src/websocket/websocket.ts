@@ -17,6 +17,11 @@ import url from 'url';
 import {makeQueueCall} from "@/websocket/actions/MakeQueueCall"
 import {startConnectToStaff} from "@/websocket/actions/StartConnectToStaff";
 import {clearUserSession} from "@/websocket/actions/ClearUserSession";
+import {createGroup} from "@/websocket/actions/CreateGroup";
+import {addNewMember} from "@/websocket/actions/AddMember";
+import {removeMember} from "@/websocket/actions/RemoveMember";
+import {getAllGroup} from "@/websocket/actions/FetchAllGroupts";
+import {getAllMembersByGroupId} from "@/websocket/actions/FetchAllMemberInGroup";
 export class WebSocket {
   constructor(uri: string, server: any) {
     const wss = new WSS.Server({
@@ -134,6 +139,22 @@ export class WebSocket {
               break;
             case "clearSession":
               clearUserSession(sessionId)
+              break;
+            case "createGroup":
+              await createGroup(message.groupName, message.members)
+              break;
+            case "addMember":
+              await addNewMember(message.groupId, message.members)
+              break;
+            case "removeMember":
+              await removeMember(message.groupId, message.members)
+              break;
+            case "getAllGroups":
+              await getAllGroup(sessionId)
+              break;
+            case "getAllMemberInGroup":
+              await getAllMembersByGroupId(sessionId, message.groupId)
+              break;
             default:
               console.error(message);
               ws.send(
